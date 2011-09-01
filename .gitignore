@@ -1,0 +1,34 @@
+.DS_Store
+log/*
+tmp/**/*
+bin/*
+
+config/database.yml
+db/*.sqlite3
+*~
+public/photos/*
+\#*\#
+#Ignore all log files and process ID files
+*.log
+*.pid
+
+#ignore all generated pshinx config files
+*.sphinx.conf
+
+#ignore all sphinx DB files
+*.spa
+*.spd
+*.sph
+*.spi                  
+*.spk
+*.spl
+*.spm
+*.spp
+
+#ignore radrails files and temp files
+.project
+.loadpath
+._*
+
+.bundle
+*.gem
