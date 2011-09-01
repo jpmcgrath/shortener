@@ -1,3 +1,35 @@
 = Shortener
 
-This project rocks and uses MIT-LICENSE.
+Shortener makes it easy to create shortened URLs for your rails application.
+
+== Installation
+
+You can use the latest Rails 3 gem with the latest Shortener gem. In your Gemfile:
+
+  gem 'shortener'
+  
+After you install Shortener run the generator:
+
+  rails generate shortener
+  
+This generator will create a migration to create the shortened_urls table where your shortened URLs will be stored.
+
+== Usage
+
+To generate a Shortened URL object for the URL "http://www.google.com" within your controller / models do the following:
+  
+  Shortener::ShortenedURL.generate("http://www.google.com")
+  
+or
+
+  Shortener::ShortenedURL.generate("www.google.com")
+
+To generate and display a shortened URL in your application use the helper method:
+
+  shortened_url("http://www.google.com")
+  
+This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
+
+== Notes
+
+This is the first release and still has some bugs. I will be releasing fixes for these bugs soon.

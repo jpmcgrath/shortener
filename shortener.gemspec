@@ -5,7 +5,7 @@ require File.expand_path("../lib/shortener/version", __FILE__)
 Gem::Specification.new do |s|
   s.name                      = "shortener"
   s.summary                   = "Shortener makes it easy to create shortened URLs for your rails application."
-  s.description               = "Insert Shortener description."
+  s.description               = "Shortener makes it easy to create shortened URLs for your rails application."
   s.files                     = `git ls-files`.split("\n")
   s.version                   = Shortener::VERSION
   s.platform                  = Gem::Platform::RUBY
