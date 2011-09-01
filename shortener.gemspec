@@ -14,8 +14,8 @@ Gem::Specification.new do |s|
   s.homepage                  = "http://jamespmcgrath.com/projects/shortener"
   s.rubyforge_project         = "shortener"
   s.required_rubygems_version = "> 1.3.6"
-  s.add_dependency "activesupport" , "~> 3.0.7"
-  s.add_dependency "rails"         , "~> 3.0.7"
+  s.add_dependency "activesupport" , ">= 3.0.7"
+  s.add_dependency "rails"         , ">= 3.0.7"
   s.executables = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
   s.require_path = 'lib'
 end

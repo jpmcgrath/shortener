@@ -1,19 +1,41 @@
 module Shortener
   class ShortenedUrl < ActiveRecord::Base
     
+    UNIQUE_KEY_LENGTH = 5
+    URL_PROTOCOL_HTTP = "http://"
+    
+    REGEX_HTTP_URL = /^\s*(http[s]?:\/\/)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?\s*$/i
+    REGEX_LINK_HAS_PROTOCOL = Regexp.new('\Ahttp:\/\/|\Ahttps:\/\/', Regexp::IGNORECASE)
+    REGEX_EMAIL = /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i
+    
+    validates_format_of :url, :with => REGEX_HTTP_URL, :allow_blank => true
+    validates_presence_of :url
+    validates_uniqueness_of :unique_key
+    
     belongs_to :user # allows the shortened link to be associated with a user
     
-    # this is best placed in your env files so you can have localhost for dev
-    #HOST_NAME = 'dealush.com'
-    UNIQUE_KEY_LENGTH = 5
-    # it can be useful to easily know how long the shortened link will be
-    # the start of the link for dealush is http://dealush.com/s/ (21 chars)
-    # change the number as needed for your site
-    #LENGTH = 21 + UNIQUE_KEY_LENGTH
+    before_validation :clean_destination_url, :init_unique_key, :on => :create
+    
+    
+    # ensure the url starts with it protocol
+    def clean_destination_url
+      if !self.url.blank? and self.url !~ REGEX_LINK_HAS_PROTOCOL
+        self.url.insert(0, URL_PROTOCOL_HTTP)
+      end
+    end
+    
+    def init_unique_key
+      # generate a unique key for the link
+      begin
+        # has about 50 million possible combos
+        self.unique_key = ShortenedUrl::generate_unique_key
+      end while ShortenedUrl::find_by_unique_key self.unique_key
+    end
     
     # generate a shortened link from a url
     # link to a user if one specified
-    def self.generate(orig_url, user=nil)
+    # throw an exception if anything goes wrong
+    def self.generate!(orig_url, user=nil)
       # don't want to generate the link if it has already been generated
       # so check the datastore
       uid = user.nil? ? nil : user.id
@@ -21,20 +43,28 @@ module Shortener
       
       return sl if sl
       
-      ukey = nil
-      
-      # generate a unique key for the link
-      begin
-        # has about 50 million possible combos
-        ukey = self.generate_unique_key
-        end while ShortenedUrl.find_by_unique_key ukey
-      
       # create the shortened link, storing it
-      sl = ShortenedUrl.create(:url => orig_url, :unique_key => ukey, :user => user)
+      sl = ShortenedUrl.create!(:url => orig_url, :user => user)
       
       # return the url
       return sl
     end
+    
+    # return shortened url on success, nil on failure
+    def self.generate(orig_url, user=nil)
+      
+      sl = nil
+      
+      begin
+        sl = ShortenedUrl::generate!(orig_url, user)
+      rescue
+        sl = nil
+      end
+      
+      return sl
+    end
+    
+    
     
     private
     
