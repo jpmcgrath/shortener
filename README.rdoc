@@ -16,17 +16,17 @@ This generator will create a migration to create the shortened_urls table where 
 
 == Usage
 
-To generate a Shortened URL object for the URL "http://www.google.com" within your controller / models do the following:
+To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
   
-  Shortener::ShortenedURL.generate("http://www.google.com")
+  Shortener::ShortenedURL.generate("http://dealush.com")
   
 or
 
-  Shortener::ShortenedURL.generate("www.google.com")
+  Shortener::ShortenedURL.generate("dealush.com")
 
 To generate and display a shortened URL in your application use the helper method:
 
-  shortened_url("http://www.google.com")
+  shortened_url("dealush.com")
   
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
