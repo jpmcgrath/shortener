@@ -2,6 +2,30 @@
 
 Shortener makes it easy to create shortened URLs for your rails application.
 
+== Overview
+
+The majority of the solution consists of two parts:
+
+* a model for storing the details of the shortened link (including the user the shortened link belongs to and counter that increments as the link is clicked);
+* a controller to accept incoming requests, grab the shortened link data out of the database and redirecting the visitors request to the target URL;
+
+=== Some niceities of shortener:
+
+* The controller does a 301 redirect, which is the recommended type of redirect for maintaining maximum google juice to the original URL;
+* A unique code of is generated for each shortened link, instead of using the id of the shortened link record. This means that we can get more unique combinations than if we just used numbers;
+* The link records a count of how many times it has been “un-shortened”;
+* The link can be linked to a user, this allows for stats of the link usage for a particular user and other interesting things;
+* The controller spawns a new thread to record information to the database, allowing the redirect to happen as quickly as possible;
+
+=== Future (possible) improvements:
+
+* There has not been an attempt to remove ambiguous characters (i.e. 1 l and capital i, or 0 and O etc.) from the unique key generated for the link. This means people might copy the link incorrectly if copying the link by hand;
+* The shortened links are found with a case-insensitive search on the unique key. This means that the system can’t take advantage of upper and lower case  to increase the number of unique combinations. This may have an effect for people copying the link by hand;
+* The system could pre-generate unique keys in advance, avoiding the database penalty when checking that a newly generated key is unique;
+* The system could store the shortened URL if the url is to be continually rendered;
+* Some implementations might want duplicate links to be generated each time a user requests it.
+
+
 == Installation
 
 You can use the latest Rails 3 gem with the latest Shortener gem. In your Gemfile:
