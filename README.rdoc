@@ -1,29 +1,32 @@
 = Shortener
 
-Shortener makes it easy to create shortened URLs for your rails application.
+Shortener is a Rails Engine Gem that makes it easy to create and interpret shortened URLs on your own domain from within your Rails application. Once installed Shortener will generate, store URLS and "unshorten" shortened URLs for your applications visitors, all whilst collecting basic usage metrics.
+
+---
 
 == Overview
 
-The majority of the solution consists of two parts:
+The majority of the Shortener consists of three parts:
 
-* a model for storing the details of the shortened link (including the user the shortened link belongs to and counter that increments as the link is clicked);
-* a controller to accept incoming requests, grab the shortened link data out of the database and redirecting the visitors request to the target URL;
+* a model for storing the details of the shortened link;
+* a controller to accept incoming requests and redirecting them to the target URL;
+* a helper for generating shortened URLs from controllers and views.
 
-=== Some niceities of shortener:
+=== Some niceities of Shortener:
 
 * The controller does a 301 redirect, which is the recommended type of redirect for maintaining maximum google juice to the original URL;
-* A unique code of is generated for each shortened link, instead of using the id of the shortened link record. This means that we can get more unique combinations than if we just used numbers;
+* A unique alphanumeric code of generated for each shortened link, this means that we can get more unique combinations than if we just used numbers;
 * The link records a count of how many times it has been “un-shortened”;
-* The link can be linked to a user, this allows for stats of the link usage for a particular user and other interesting things;
+* The link can be associated with a user, this allows for stats of the link usage for a particular user and other interesting things;
 * The controller spawns a new thread to record information to the database, allowing the redirect to happen as quickly as possible;
 
-=== Future (possible) improvements:
+=== Future improvements:
 
 * There has not been an attempt to remove ambiguous characters (i.e. 1 l and capital i, or 0 and O etc.) from the unique key generated for the link. This means people might copy the link incorrectly if copying the link by hand;
 * The shortened links are found with a case-insensitive search on the unique key. This means that the system can’t take advantage of upper and lower case  to increase the number of unique combinations. This may have an effect for people copying the link by hand;
 * The system could pre-generate unique keys in advance, avoiding the database penalty when checking that a newly generated key is unique;
 * The system could store the shortened URL if the url is to be continually rendered;
-* Some implementations might want duplicate links to be generated each time a user requests it.
+* Some implementations might want duplicate links to be generated each time a user request a shortened link.
 
 
 == Installation
@@ -54,6 +57,12 @@ To generate and display a shortened URL in your application use the helper metho
   
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
-== Notes
+== Origins
 
-This is the first release and still has some bugs. I will be releasing fixes for these bugs soon.
+Shortener is based on code from Dealush[http://dealush.com], for a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.com/a-simple-link-shortener-in-rails/].
+
+== Todo
+
+* Fully document code with RDoc friendly comments
+* Implement unit tests
+* Provide more configurations for defaults
