@@ -1,17 +1,28 @@
 require "active_support/dependencies"
 
 module Shortener
-  
-  # Our host application root path
-  # We set this when the engine is initialized
-  mattr_accessor :app_root
-  
-  # Yield self on setup for nice config blocks
-  def self.setup
-    yield self
+
+  autoload :ActiveRecordExtension, "shortener/active_record_extension"
+
+  CHARSETS = {
+    :alphanum => ('a'..'z').to_a + (0..9).to_a,
+    :alphanumcase => ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a }
+
+  # default key length: 5 characters
+  mattr_accessor :unique_key_length
+  self.unique_key_length = 5
+
+  # character set to chose from:
+  #  :alphanum     - a-z0-9     -  has about 60 million possible combos
+  #  :alphanumcase - a-zA-Z0-9  -  has about 900 million possible combos
+  mattr_accessor :charset
+  self.charset = :alphanum
+
+  def self.key_chars
+    CHARSETS[charset]
   end
-  
 end
 
-# Require our engine
+# Require our railtie and engine
+require "shortener/railtie"
 require "shortener/engine"
