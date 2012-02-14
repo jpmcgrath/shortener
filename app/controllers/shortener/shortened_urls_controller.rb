@@ -14,11 +14,11 @@ class Shortener::ShortenedUrlsController < ::ApplicationController
         sl.increment!(:use_count)
       end
       # do a 301 redirect to the destination url
-      head :moved_permanently, :location => sl.url
+      redirect_to sl.url, :status => :moved_permanently
     else
       # if we don't find the shortened link, redirect to the root
       # make this configurable in future versions
-      head :moved_permanently, :location => root_path
+      redirect_to '/'
     end
   end
 
