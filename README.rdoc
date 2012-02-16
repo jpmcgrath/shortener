@@ -81,8 +81,8 @@ And to access those URLs:
 
 Shortener is based on code from Dealush[http://dealush.com], for a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.com/a-simple-link-shortener-in-rails/].
 
-== Todo
+== Authors
 
-* Fully document code with RDoc friendly comments
-* Implement unit tests
-* Provide more configurations for defaults
+* {James McGrath}[https://github.com/jpmcgrath]
+* {Michael Reinsch}[https://github.com/mreinsch]
+
