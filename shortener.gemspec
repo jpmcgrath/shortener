@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.files                     = `git ls-files`.split("\n")
   s.version                   = Shortener::VERSION
   s.platform                  = Gem::Platform::RUBY
-  s.authors                   = [ "James P. McGrath" ]
-  s.email                     = [ "gems@jamespmcgrath.com" ]
+  s.authors                   = [ "James P. McGrath", "Michael Reinsch" ]
+  s.email                     = [ "gems@jamespmcgrath.com", "michael@mobalean.com" ]
   s.homepage                  = "http://jamespmcgrath.com/projects/shortener"
   s.rubyforge_project         = "shortener"
   s.required_rubygems_version = "> 1.3.6"
