@@ -49,15 +49,15 @@ Then add to your routes:
 
 To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
   
-  Shortener::ShortenedURL.generate("http://dealush.com")
+  Shortener::ShortenedUrl.generate("http://dealush.com")
   
 or
 
-  Shortener::ShortenedURL.generate("dealush.com")
+  Shortener::ShortenedUrl.generate("dealush.com")
 
 To generate and display a shortened URL in your application use the helper method:
 
-  shortened_url("dealush.com")
+  short_url("dealush.com")
   
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
@@ -71,7 +71,7 @@ You can link shortened URLs to an owner, to scope them. To do so, add the follow
 
 This will allow you to pass the owner when generating URLs:
 
-  Shortener::ShortenedURL.generate("dealush.com", user)
+  Shortener::ShortenedUrl.generate("dealush.com", user)
 
 And to access those URLs:
 

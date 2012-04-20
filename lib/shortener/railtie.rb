@@ -6,5 +6,6 @@ class Shortener::Railtie < ::Rails::Railtie #:nodoc:
     ActiveSupport.on_load :active_record do
       extend Shortener::ActiveRecordExtension
     end
+    ActionView::Base.send :include, Shortener::ShortenerHelper
   end
 end
