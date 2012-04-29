@@ -11,3 +11,4 @@ bin/*
 *.gem
 *.swp
 Gemfile.lock
+.rvmrc
