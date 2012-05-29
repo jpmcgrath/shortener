@@ -97,6 +97,16 @@ The interceptor supports a few more arguments, see the implementation for detail
 
 Shortener is based on code from Dealush[http://dealush.com], for a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.com/a-simple-link-shortener-in-rails/].
 
+== In The Wild
+
+Shortener is used in a number of production systems:
+
+{Doorkeeper - An Event Management Tool}[http://www.doorkeeperhq.com/]
+
+{Dealush - A Local shopping Sales Notification Service}[http://dealush.com]
+
+If you are using Shortener in your project and would like to be added to this list, please get in touch!
+
 == Authors
 
 * {James McGrath}[https://github.com/jpmcgrath]
