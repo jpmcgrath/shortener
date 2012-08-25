@@ -1,3 +1,5 @@
-class User < ActiveRecord::Base
-  has_shortened_urls
+class User
+  include Mongoid::Document
+  # TODO:
+  #has_shortened_urls
 end

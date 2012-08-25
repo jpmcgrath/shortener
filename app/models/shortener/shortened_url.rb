@@ -1,4 +1,7 @@
-class Shortener::ShortenedUrl < ActiveRecord::Base
+require 'mongoid'
+
+class Shortener::ShortenedUrl
+  include Mongoid::Document
 
   URL_PROTOCOL_HTTP = "http://"
   REGEX_LINK_HAS_PROTOCOL = Regexp.new('\Ahttp:\/\/|\Ahttps:\/\/', Regexp::IGNORECASE)
@@ -6,7 +9,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   validates :url, :presence => true
 
   # allows the shortened link to be associated with a user
-  belongs_to :owner, :polymorphic => true
+  #belongs_to :owner, :polymorphic => true
 
   # ensure the url starts with it protocol and is normalized
   def self.clean_url(url)
@@ -29,6 +32,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     # so check the datastore
     cleaned_url = clean_url(orig_url)
     scope = owner ? owner.shortened_urls : self
+    debugger
     scope.find_or_create_by_url(cleaned_url)
   end
 

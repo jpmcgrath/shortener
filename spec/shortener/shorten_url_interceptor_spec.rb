@@ -17,7 +17,7 @@ describe Shortener::ShortenUrlInterceptor do
             "Test with URL: %{url}. hu!",
             "Test with URL: <a href='%{url}'>test</a>",
             "Test with URL: <a href=\"%{url}\">test</a>" ]
-  
+
   shared_examples_for "shortens URL in text" do |url|
     TEXTS.each do |raw_email_body_text|
       email_body_text = raw_email_body_text % {:url => url}
