@@ -109,5 +109,7 @@ If you are using Shortener in your project and would like to be added to this li
 
 == Authors
 
+* {James McGrath}[https://github.com/jpmcgrath]
+* {Michael Reinsch}[https://github.com/mreinsch]
 * {Kenny Meyer}[https://github.com/kennym]
 
