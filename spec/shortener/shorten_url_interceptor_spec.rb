@@ -23,7 +23,7 @@ describe Shortener::ShortenUrlInterceptor do
       email_body_text = raw_email_body_text % {:url => url}
       it("shortens for #{email_body_text}") do
         email = create_email(email_body_text)
-        short_url = Shortener::ShortenedUrl.find_by_url(url)
+        short_url = Shortener::ShortenedUrl.find_by_url(url: url)
         short_url.should_not be_nil
         email.body.should == (raw_email_body_text % {:url => "http://mbln.jp/#{short_url.unique_key}"})
       end

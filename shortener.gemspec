@@ -12,13 +12,15 @@ Gem::Specification.new do |s|
   s.authors                   = [ "Kenny Meyer", "James P. McGrath", "Michael Reinsch" ]
   s.email                     = [ "kenny@kennymeyer.net", "gems@jamespmcgrath.com", "michael@mobalean.com" ]
   s.homepage                  = "http://jamespmcgrath.com/projects/shortener"
-  s.rubyforge_project         = "shortener"
+  #s.rubyforge_project         = "shortener"
   s.required_rubygems_version = "> 1.3.6"
   s.add_dependency "rails", ">= 3.0.7"
   s.add_dependency "mongoid"
   s.add_development_dependency "debugger"
+  s.add_development_dependency "mongoid-rspec"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "shoulda-matchers"
+  s.add_development_dependency "database_cleaner"
   s.executables = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
   s.require_path = 'lib'
 end

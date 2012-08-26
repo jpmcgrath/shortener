@@ -2,7 +2,6 @@ require "active_support/dependencies"
 
 module Shortener
 
-  autoload :ActiveRecordExtension, "shortener/active_record_extension"
   autoload :ShortenUrlInterceptor, "shortener/shorten_url_interceptor"
 
   CHARSETS = {

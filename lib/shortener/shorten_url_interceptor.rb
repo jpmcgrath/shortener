@@ -47,7 +47,6 @@ Usage:
       end
     rescue => err
       raise err if Rails.env.test?
-      Airbrake.notify(err, :url => url) if defined?(Airbrake)
       return url
     end
 
