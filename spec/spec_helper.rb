@@ -3,6 +3,7 @@ ENV["RAILS_ENV"] = "test"
 
 require 'shortener'
 require 'mongoid'
+require 'mongoid-rspec'
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 require 'rspec/rails'
 require 'shoulda/matchers/integrations/rspec'

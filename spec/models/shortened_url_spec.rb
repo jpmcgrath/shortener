@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe Shortener::ShortenedUrl do
-  it { should belong_to :owner }
+  it { should belong_to(:owner) }
   it { should validate_presence_of :url }
 
   shared_examples_for "shortened url" do
