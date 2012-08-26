@@ -7,7 +7,7 @@ class Shortener::ShortenedUrlsController < ActionController::Base
 
     # pull the link out of the db
     begin
-      sl = ::Shortener::ShortenedUrl.find_by(unique_key: token)
+      sl = ::Shortener::ShortenedUrl.where(unique_key: token).first
     rescue Mongoid::Errors::DocumentNotFound => e
       nil
     end
