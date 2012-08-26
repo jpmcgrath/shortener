@@ -1,4 +1,4 @@
-module Shortener::ActiveRecordExtension
+module Shortener::MongoidExtension
   def has_shortened_urls
     has_many :shortened_urls, :class_name => "::Shortener::ShortenedUrl", :as => :owner
   end

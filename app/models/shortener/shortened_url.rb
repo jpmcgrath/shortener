@@ -1,9 +1,23 @@
-class Shortener::ShortenedUrl < ActiveRecord::Base
+class Shortener::ShortenedUrl
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  field :url,         :type => String
+  field :unique_key,  :type => String
+  field :use_count,   :type => Integer, :default => 0
+
+  index({ url: 1}, { unique: true })
+  index({ unique_key: 1 }, { unique: true })
 
   URL_PROTOCOL_HTTP = "http://"
   REGEX_LINK_HAS_PROTOCOL = Regexp.new('\Ahttp:\/\/|\Ahttps:\/\/', Regexp::IGNORECASE)
 
-  validates :url, :presence => true
+  validates :url, :presence => true, :uniqueness => true
+  validates :unique_key, :uniqueness => true
+
+  attr_accessible :url, :unique_key
+
+  before_create :assign_unique_key
 
   # allows the shortened link to be associated with a user
   belongs_to :owner, :polymorphic => true
@@ -29,7 +43,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     # so check the datastore
     cleaned_url = clean_url(orig_url)
     scope = owner ? owner.shortened_urls : self
-    scope.find_or_create_by_url(cleaned_url)
+    scope.find_or_create_by(url: cleaned_url)
   end
 
   # return shortened url on success, nil on failure
@@ -45,12 +59,11 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   # we'll rely on the DB to make sure the unique key is really unique.
   # if it isn't unique, the unique index will catch this and raise an error
-  def create
+  def assign_unique_key
     count = 0
     begin
       self.unique_key = generate_unique_key
-      super
-    rescue ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => err
+    rescue Exception => err
       if (count +=1) < 5
         logger.info("retrying with different unique key")
         retry

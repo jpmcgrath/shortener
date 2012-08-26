@@ -17,13 +17,17 @@ describe Shortener::ShortenUrlInterceptor do
             "Test with URL: %{url}. hu!",
             "Test with URL: <a href='%{url}'>test</a>",
             "Test with URL: <a href=\"%{url}\">test</a>" ]
-  
+
   shared_examples_for "shortens URL in text" do |url|
     TEXTS.each do |raw_email_body_text|
       email_body_text = raw_email_body_text % {:url => url}
       it("shortens for #{email_body_text}") do
         email = create_email(email_body_text)
-        short_url = Shortener::ShortenedUrl.find_by_url(url)
+        begin
+          short_url = Shortener::ShortenedUrl.find_by(url: url)
+        rescue Mongoid::Errors::DocumentNotFound
+
+        end
         short_url.should_not be_nil
         email.body.should == (raw_email_body_text % {:url => "http://mbln.jp/#{short_url.unique_key}"})
       end
@@ -35,7 +39,11 @@ describe Shortener::ShortenUrlInterceptor do
       email_body_text = raw_email_body_text % {:url => url}
       it("keeps URL for #{email_body_text}") do
         email = create_email(email_body_text)
-        short_url = Shortener::ShortenedUrl.find_by_url(url)
+        begin
+          short_url = Shortener::ShortenedUrl.find_by(url: url)
+        rescue Mongoid::Errors::DocumentNotFound
+
+        end
         short_url.should be_nil
         email.body.should == email_body_text
       end

@@ -2,8 +2,8 @@ require "active_support/dependencies"
 
 module Shortener
 
-  autoload :ActiveRecordExtension, "shortener/active_record_extension"
-  autoload :ShortenUrlInterceptor, "shortener/shorten_url_interceptor"
+  autoload :ShortenUrlInterceptor, "shortener_mongoid/shorten_url_interceptor"
+  autoload :MongoidExtension, "shortener_mongoid/mongoid_extension.rb"
 
   CHARSETS = {
     :alphanum => ('a'..'z').to_a + (0..9).to_a,
@@ -25,5 +25,5 @@ module Shortener
 end
 
 # Require our railtie and engine
-require "shortener/railtie"
-require "shortener/engine"
+require "shortener_mongoid/railtie"
+require "shortener_mongoid/engine"

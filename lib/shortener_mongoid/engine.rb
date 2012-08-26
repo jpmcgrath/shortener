@@ -1,5 +1,5 @@
 require "rails/engine"
-require "shortener"
+require "shortener_mongoid"
 
 class Shortener::Engine < ::Rails::Engine #:nodoc:
   config.shortener = Shortener
