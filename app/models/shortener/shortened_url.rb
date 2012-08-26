@@ -64,7 +64,6 @@ class Shortener::ShortenedUrl
     begin
       self.unique_key = generate_unique_key
     rescue Exception => err
-      debugger
       if (count +=1) < 5
         logger.info("retrying with different unique key")
         retry

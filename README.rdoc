@@ -33,11 +33,7 @@ The majority of the Shortener consists of three parts:
 
 You can use the latest Rails 3 gem with the latest Shortener gem. In your Gemfile:
 
-  gem 'shortener'
-
-After you install Shortener run the generator:
-
-  rails generate shortener
+  gem 'shortener_mongoid'
 
 This generator will create a migration to create the shortened_urls table where your shortened URLs will be stored.
 
@@ -48,9 +44,9 @@ Then add to your routes:
 == Usage
 
 To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
-  
+
   Shortener::ShortenedUrl.generate("http://dealush.com")
-  
+
 or
 
   Shortener::ShortenedUrl.generate("dealush.com")
@@ -58,14 +54,16 @@ or
 To generate and display a shortened URL in your application use the helper method:
 
   short_url("dealush.com")
-  
+
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
 === Shortened URLs with owner
 
 You can link shortened URLs to an owner, to scope them. To do so, add the following line to the models which will act as owners:
 
-  class User < ActiveRecord::Base
+  class User
+    include Mongoid::Document
+
     has_shortened_urls
   end
 
