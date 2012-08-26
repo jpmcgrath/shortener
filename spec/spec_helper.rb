@@ -2,6 +2,7 @@
 ENV["RAILS_ENV"] = "test"
 
 require 'shortener'
+require 'database_cleaner'
 require 'mongoid'
 require 'mongoid-rspec'
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
@@ -18,7 +19,6 @@ RSpec.configure do |config|
   # Other things
   Mongoid.load!(File.expand_path("../dummy/config/mongoid.yml", __FILE__), :test)
   # Clean up the database
-  require 'database_cleaner'
   config.before(:suite) do
     DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.orm = "mongoid"

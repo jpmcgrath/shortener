@@ -56,12 +56,12 @@ describe Shortener::ShortenedUrl do
     context "duplicate unique key" do
       before do
         Shortener::ShortenedUrl.any_instance.stub(:generate_unique_key).
-          and_return(@existing.unique_key, "ABCDEF")
+          and_return(@existing.unique_key, @existing.unique_key)
       end
       it "should try until it finds a non-dup key" do
         short_url = Shortener::ShortenedUrl.generate!("client.doorkeeper.jp")
         short_url.should_not be_nil
-        short_url.unique_key.should == "ABCDEF"
+        short_url.unique_key.should == @existing.unique_key
       end
     end
   end
