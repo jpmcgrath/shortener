@@ -1,5 +1,5 @@
 require "rails/railtie"
-require "shortener"
+require "shortener_mongoid"
 
 class Shortener::Railtie < ::Rails::Railtie #:nodoc:
   initializer "shortener.initialize" do

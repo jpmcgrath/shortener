@@ -1,7 +1,7 @@
 # Configure Rails Envinronment
 ENV["RAILS_ENV"] = "test"
 
-require 'shortener'
+require 'shortener_mongoid'
 require 'database_cleaner'
 require 'mongoid'
 require 'mongoid-rspec'
