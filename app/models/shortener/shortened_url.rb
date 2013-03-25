@@ -41,6 +41,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     end
   end
 
+  def to_param
+    unique_key
+  end
+
   private
 
   # we'll rely on the DB to make sure the unique key is really unique.
