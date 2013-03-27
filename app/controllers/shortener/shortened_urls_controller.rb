@@ -2,8 +2,11 @@ class Shortener::ShortenedUrlsController < ActionController::Base
 
   # find the real link for the shortened link key and redirect
   def show
+    # only use the leading valid characters
+    token = /^([#{Shortener.key_chars.join}]*).*/.match(params[:id])[1]
+
     # pull the link out of the db
-    sl = ::Shortener::ShortenedUrl.find_by_unique_key(unique_key) if unique_key.present?
+    sl = ::Shortener::ShortenedUrl.find_by_unique_key(token)
 
     if sl
       # don't want to wait for the increment to happen, make it snappy!
@@ -21,18 +24,6 @@ class Shortener::ShortenedUrlsController < ActionController::Base
       # make this configurable in future versions
       redirect_to '/'
     end
-  end
-
-  private
-
-  def unique_key
-    if @unique_key.nil?
-      # only use the leading valid characters
-      match = /^([#{Shortener.key_chars.join}]*).*/.match(params[:unique_key])
-      @unique_key = match[1] if match.present?
-    end
-
-    @unique_key
   end
 
 end
