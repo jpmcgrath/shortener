@@ -45,7 +45,7 @@ This generator will create a migration to create the shortened_urls table where 
 
 Then add to your routes:
 
-  match '/:id' => "shortener/shortened_urls#show"
+  match '/:id' => "shortener/shortened_urls#show", via: :all
 
 == Usage
 
