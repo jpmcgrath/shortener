@@ -12,7 +12,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   def self.clean_url(url)
     return nil if url.blank?
     url = URL_PROTOCOL_HTTP + url.strip unless url =~ REGEX_LINK_HAS_PROTOCOL
-    URI.parse(URI.escape(url)).normalize.to_s
+    URI.parse(url).normalize.to_s
   end
 
   # generate a shortened link from a url
@@ -32,7 +32,6 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     obj = scope.find_or_initialize_by(url: cleaned_url)
     if obj.new_record?
         obj.create_unique_key
-        obj.save
     end
     obj
   end
@@ -52,6 +51,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     count = 0
     begin
       self.unique_key = generate_unique_key
+      self.save
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => err
       if (count +=1) < 5
         logger.info("retrying with different unique key")
