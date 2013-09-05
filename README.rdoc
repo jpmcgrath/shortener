@@ -36,23 +36,23 @@ The majority of the Shortener consists of three parts:
 You can use the latest Rails 3 gem with the latest Shortener gem. In your Gemfile:
 
   gem 'shortener'
-  
+
 After you install Shortener run the generator:
 
   rails generate shortener
-  
+
 This generator will create a migration to create the shortened_urls table where your shortened URLs will be stored.
 
 Then add to your routes:
 
-  match '/:id' => "shortener/shortened_urls#show"
+  match '/:id' => "shortener/shortened_urls#show", via: :get
 
 == Usage
 
 To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
-  
+
   Shortener::ShortenedUrl.generate("http://dealush.com")
-  
+
 or
 
   Shortener::ShortenedUrl.generate("dealush.com")
@@ -60,7 +60,7 @@ or
 To generate and display a shortened URL in your application use the helper method:
 
   short_url("dealush.com")
-  
+
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
 === Shortened URLs with owner

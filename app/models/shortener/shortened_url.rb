@@ -29,7 +29,11 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     # so check the datastore
     cleaned_url = clean_url(orig_url)
     scope = owner ? owner.shortened_urls : self
-    scope.find_or_create_by_url(cleaned_url)
+    obj = scope.find_or_initialize_by(url: cleaned_url)
+    if obj.new_record?
+        obj.create_unique_key
+    end
+    obj
   end
 
   # return shortened url on success, nil on failure
@@ -41,15 +45,13 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     end
   end
 
-  private
-
   # we'll rely on the DB to make sure the unique key is really unique.
   # if it isn't unique, the unique index will catch this and raise an error
-  def create
+  def create_unique_key
     count = 0
     begin
       self.unique_key = generate_unique_key
-      super
+      self.save
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => err
       if (count +=1) < 5
         logger.info("retrying with different unique key")
