@@ -19,6 +19,10 @@ module Shortener
   mattr_accessor :charset
   self.charset = :alphanum
 
+  # forbidden keys
+  mattr_accessor :forbidden_keys
+  self.forbidden_keys = []
+
   def self.key_chars
     CHARSETS[charset]
   end

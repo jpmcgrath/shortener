@@ -65,4 +65,23 @@ describe Shortener::ShortenedUrl do
       end
     end
   end
+
+  describe "unexpired scope" do
+    subject { described_class.unexpired }
+
+    it "should build correct sql" do
+      current_time = Time.current
+      Time.stub(:current).and_return(current_time)
+      subject.where_values.should have(1).item
+      subject.where_values.first.to_sql.should == "(\"shortened_urls\".\"expires_at\" IS NULL OR \"shortened_urls\".\"expires_at\" > '#{current_time.to_s(:db)}')"
+    end
+
+    it "should contain permanent and unexpired records" do
+      described_class.destroy_all
+      permanent_url = described_class.generate("example.com/page1")
+      expired_url   = described_class.generate("example.com/page2", nil, expires_at: 2.hour.ago)
+      unexpired_url = described_class.generate("example.com/page3", nil, expires_at: 1.hour.since)
+      subject.map(&:id).should =~ [permanent_url.id, unexpired_url.id]
+    end
+  end
 end

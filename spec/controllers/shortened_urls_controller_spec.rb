@@ -17,9 +17,10 @@ end
 
 describe Shortener::ShortenedUrlsController do
   let(:short_url) { Shortener::ShortenedUrl.generate("www.doorkeeperhq.com") }
+  let(:expired_url) { Shortener::ShortenedUrl.generate("www.example.com/page", nil, expires_at: 1.hour.ago) }
 
   describe "GET show with actual code" do
-    let(:code) { short_url.unique_key}
+    let(:code) { short_url.unique_key }
     it_should_behave_like "good code"
   end
 
@@ -35,6 +36,11 @@ describe Shortener::ShortenedUrlsController do
 
   describe "GET show with code of invalid characters" do
     let(:code) { "-" }
+    it_should_behave_like "wrong code"
+  end
+
+  describe "GET show with expired code" do
+    let(:code) { expired_url.unique_key }
     it_should_behave_like "wrong code"
   end
 end

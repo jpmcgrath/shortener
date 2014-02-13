@@ -6,7 +6,7 @@ class Shortener::ShortenedUrlsController < ActionController::Base
     token = /^([#{Shortener.key_chars.join}]*).*/.match(params[:id])[1]
 
     # pull the link out of the db
-    sl = ::Shortener::ShortenedUrl.find_by_unique_key(token)
+    sl = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
 
     if sl
       # don't want to wait for the increment to happen, make it snappy!
