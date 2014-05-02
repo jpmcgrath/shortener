@@ -65,4 +65,18 @@ describe Shortener::ShortenedUrl do
       end
     end
   end
+
+  context "diplicate shortened URLs" do
+    it "shouldn't create duplicate urls" do
+      Shortener::ShortenedUrl.generate!(some_url)
+      Shortener::ShortenedUrl.generate!(some_url)
+      Shortener::ShortenedUrl.count.should == 1
+    end
+
+    it "should create duplicate urls" do
+      Shortener::ShortenedUrl.generate!(some_url, false)
+      Shortener::ShortenedUrl.generate!(some_url, false)
+      Shortener::ShortenedUrl.count.should == 2
+    end
+  end
 end
