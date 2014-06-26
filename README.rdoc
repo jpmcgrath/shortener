@@ -47,6 +47,12 @@ Then add to your routes:
 
   match '/:id' => "shortener/shortened_urls#show"
 
+== Initialization
+
+By default, the shortener will generate keys that are 5 characters long. You can change that by specifying the length of the key in the config/initializers/shortener.rb file.
+
+  Shortener.unique_key_length = 6
+
 == Usage
 
 To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
