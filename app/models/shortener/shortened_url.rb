@@ -44,10 +44,17 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   private
 
   # the create method changed in rails 4...
-  if Rails::VERSION::MAJOR >= 4
-    CREATE_METHOD_NAME = "create_record"
+  CREATE_METHOD_NAME =
+    if Rails::VERSION::MAJOR >= 4
+      # And again in 4.0.6/4.1.2
+      if ((Rails::VERSION::MINOR == 0) && (Rails::VERSION::TINY < 6)) ||
+         ((Rails::VERSION::MINOR == 1) && (Rails::VERSION::TINY < 2))
+        "create_record"
+      else
+        "_create_record"
+      end
   else
-    CREATE_METHOD_NAME = "create"
+    "create"
   end
 
   # we'll rely on the DB to make sure the unique key is really unique.
