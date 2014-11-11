@@ -75,12 +75,9 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     end
   end
 
-  # generate a random string
-  # future mod to allow specifying a more expansive charst, like utf-8 chinese
+  # Use secure random instead of character mapping
   def generate_unique_key
-    # not doing uppercase as url is case insensitive
-    charset = ::Shortener.key_chars
-    (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join
+    SecureRandom.urlsafe_base64(Shortener.unique_key_length)
   end
 
 end

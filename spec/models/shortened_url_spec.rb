@@ -10,7 +10,6 @@ describe Shortener::ShortenedUrl do
     it "should be shortened" do
       short_url.should_not be_nil
       short_url.url.should == expected_long_url
-      short_url.unique_key.length.should == 5
       short_url.owner.should == owner
     end
   end
