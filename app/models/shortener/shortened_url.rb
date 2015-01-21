@@ -41,6 +41,18 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     end
   end
 
+  def self.fetch_record_by_shortened_url(url)
+    token = token_key(url)
+    # pull the link out of the db
+    Shortener::ShortenedUrl.find_by_unique_key(token)
+  end
+
+  # return original i.e long url from db on success, empty on failure
+  def self.original_url(shortened_url)
+    sl = fetch_record_by_shortened_url(shortened_url)
+    sl ? sl.url : ''
+  end
+
   private
 
   # the create method changed in rails 4...
@@ -83,4 +95,8 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join
   end
 
+  def self.token_key(shortened_url)
+    # only use the leading valid characters
+    /^([#{::Shortener.key_chars.join}]*).*/.match(shortened_url)[1]
+  end
 end
