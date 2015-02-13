@@ -17,7 +17,7 @@ Usage:
                             'cloudfront\.net/' ].map {|r| Regexp.new(r) }
     DEFAULT_LENGTH_THRESHOLD = 20
 
-    URL_REGEX = /\b((https?):\/\/\w+\.)[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[-A-Z0-9+&@#\/%=~_|$]/i
+    URL_REGEX = /\b((https?):\/\/[\w\.-]+[\.]\w+)([-A-Z0-9+&@#\/%?=~_|$!:,.;]*[-A-Z0-9+&@#\/%=~_|$])?/i
     MIME_TYPES = %w(text/plain text/html application/xhtml+xml)
 
     def initialize(opts = {})
