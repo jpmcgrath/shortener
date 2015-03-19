@@ -5,8 +5,9 @@ describe Shortener::ShortenedUrl do
   it { should belong_to :owner }
   it { should validate_presence_of :url }
 
+  let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner, custom_key) }
+
   shared_examples_for "shortened url" do
-    let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner) }
     it "should be shortened" do
       short_url.should_not be_nil
       short_url.url.should == expected_long_url
@@ -19,6 +20,7 @@ describe Shortener::ShortenedUrl do
     let(:long_url) { "http://www.doorkeeperhq.com/" }
     let(:expected_long_url) { long_url }
     let(:owner) { nil }
+    let(:custom_key) { nil }
     it_should_behave_like "shortened url"
   end
 
@@ -26,6 +28,7 @@ describe Shortener::ShortenedUrl do
     let(:long_url) { "www.doorkeeperhq.com" }
     let(:expected_long_url) { "http://www.doorkeeperhq.com/" }
     let(:owner) { nil }
+    let(:custom_key) { nil }
     it_should_behave_like "shortened url"
   end
 
@@ -33,6 +36,7 @@ describe Shortener::ShortenedUrl do
     let(:long_url) { "http://www.doorkeeper.jp/%E6%97%A5%E6%9C%AC%E8%AA%9E" }
     let(:expected_long_url) { long_url }
     let(:owner) { nil }
+    let(:custom_key) { nil }
     it_should_behave_like "shortened url"
   end
 
@@ -40,7 +44,19 @@ describe Shortener::ShortenedUrl do
     let(:long_url) { "http://www.doorkeeperhq.com/" }
     let(:expected_long_url) { long_url }
     let(:owner) { User.create }
+    let(:custom_key) { nil }
     it_should_behave_like "shortened url"
+  end
+
+  context "custom key" do
+    let(:long_url) { "http://www.doorkeeperhq.com/" }
+    let(:expected_long_url) { long_url }
+    let(:owner) { nil }
+    let(:custom_key) { 'custom' }
+
+    it "uses a unique key" do
+      short_url.unique_key.should == custom_key
+    end
   end
 
   context "existing shortened URL" do

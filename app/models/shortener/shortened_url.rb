@@ -18,24 +18,28 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # generate a shortened link from a url
   # link to a user if one specified
   # throw an exception if anything goes wrong
-  def self.generate!(orig_url, owner=nil)
+  def self.generate!(orig_url, owner=nil, custom_key=nil)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
     if orig_url.is_a?(Shortener::ShortenedUrl)
-      return orig_url.owner == owner ? orig_url : generate!(orig_url.url, owner)
+      return orig_url.owner == owner ? orig_url : generate!(orig_url.url, owner, custom_key)
     end
 
     # don't want to generate the link if it has already been generated
     # so check the datastore
     cleaned_url = clean_url(orig_url)
     scope = owner ? owner.shortened_urls : self
-    scope.where(:url => cleaned_url).first_or_create
+    if custom_key
+      scope.where(:url => cleaned_url, :unique_key => custom_key).first_or_create
+    else
+      scope.where(:url => cleaned_url).first_or_create
+    end
   end
 
   # return shortened url on success, nil on failure
-  def self.generate(orig_url, owner=nil)
+  def self.generate(orig_url, owner=nil, custom_key=nil)
     begin
-      generate!(orig_url, owner)
+      generate!(orig_url, owner, custom_key)
     rescue
       nil
     end

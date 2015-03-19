@@ -36,11 +36,11 @@ The majority of the Shortener consists of three parts:
 You can use the latest Rails 3 gem with the latest Shortener gem. In your Gemfile:
 
   gem 'shortener'
-  
+
 After you install Shortener run the generator:
 
   rails generate shortener
-  
+
 This generator will create a migration to create the shortened_urls table where your shortened URLs will be stored.
 
 Then add to your routes:
@@ -56,9 +56,9 @@ By default, the shortener will generate keys that are 5 characters long. You can
 == Usage
 
 To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
-  
+
   Shortener::ShortenedUrl.generate("http://dealush.com")
-  
+
 or
 
   Shortener::ShortenedUrl.generate("dealush.com")
@@ -66,7 +66,7 @@ or
 To generate and display a shortened URL in your application use the helper method:
 
   short_url("dealush.com")
-  
+
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
 === Shortened URLs with owner
@@ -84,6 +84,12 @@ This will allow you to pass the owner when generating URLs:
 And to access those URLs:
 
   user.shortened_urls
+
+=== Shortened URLs with custom unqiue key
+
+You can pass in your own key when generating a shortened URL. This should be unique.
+
+  Shortener::ShortenedUrl.generate("dealush.com", user, "my-key")
 
 === Shorten URLs in generated emails
 
