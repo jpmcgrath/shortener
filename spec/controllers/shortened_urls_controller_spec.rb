@@ -37,4 +37,9 @@ describe Shortener::ShortenedUrlsController do
     let(:code) { "-" }
     it_should_behave_like "wrong code"
   end
+
+  it "maintains query params" do
+    get :show, :id => short_url.unique_key, :utm_medium => 'large', :utm_source => 'ketchup'
+    response.should redirect_to("http://www.doorkeeperhq.com/?utm_medium=large&utm_source=ketchup")
+  end
 end
