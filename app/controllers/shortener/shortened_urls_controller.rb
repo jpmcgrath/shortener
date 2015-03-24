@@ -1,3 +1,5 @@
+require "addressable/uri"
+
 class Shortener::ShortenedUrlsController < ActionController::Base
 
   # find the real link for the shortened link key and redirect
@@ -18,12 +20,23 @@ class Shortener::ShortenedUrlsController < ActionController::Base
         ActiveRecord::Base.connection.close
       end
       # do a 301 redirect to the destination url
-      redirect_to sl.url, :status => :moved_permanently
+      redirect_to redirect_url_with_params(sl), :status => :moved_permanently
     else
       # if we don't find the shortened link, redirect to the root
       # make this configurable in future versions
       redirect_to '/'
     end
+  end
+
+  private
+
+  def redirect_url_with_params(short_link)
+    uri = Addressable::URI.parse(short_link.url)
+    if uri.query_values || request.query_parameters.any?
+      params = uri.query_values || {}
+      uri.query_values = params.merge(request.query_parameters)
+    end
+    uri.to_s
   end
 
 end
