@@ -16,7 +16,8 @@ shared_examples_for "wrong code" do
 end
 
 describe Shortener::ShortenedUrlsController do
-  let(:short_url) { Shortener::ShortenedUrl.generate("www.doorkeeperhq.com") }
+  let(:long_url) { "www.doorkeeperhq.com" }
+  let(:short_url) { Shortener::ShortenedUrl.generate(long_url) }
 
   describe "GET show with actual code" do
     let(:code) { short_url.unique_key}
@@ -38,8 +39,21 @@ describe Shortener::ShortenedUrlsController do
     it_should_behave_like "wrong code"
   end
 
-  it "maintains query params" do
-    get :show, :id => short_url.unique_key, :utm_medium => 'large', :utm_source => 'ketchup'
-    response.should redirect_to("http://www.doorkeeperhq.com/?utm_medium=large&utm_source=ketchup")
+  describe 'maintaing query parameters' do
+    context 'without existing query params' do
+      it "adds new query params" do
+        get :show, :id => short_url.unique_key, :utm_medium => 'large', :utm_source => 'ketchup'
+        response.should redirect_to("http://www.doorkeeperhq.com/?utm_medium=large&utm_source=ketchup")
+      end
+    end
+
+    context "with existing query params" do
+      let(:long_url) { "http://www.doorkeeperhq.com?monkey=tennis" }
+
+      it "adds query params" do
+        get :show, :id => short_url.unique_key, :utm_medium => 'large', :utm_source => 'ketchup'
+        response.should redirect_to("http://www.doorkeeperhq.com/?monkey=tennis&utm_medium=large&utm_source=ketchup")
+      end
+    end
   end
 end
