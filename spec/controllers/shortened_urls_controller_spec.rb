@@ -55,5 +55,12 @@ describe Shortener::ShortenedUrlsController do
         response.should redirect_to("http://www.doorkeeperhq.com/?monkey=tennis&utm_medium=large&utm_source=ketchup")
       end
     end
+
+    context 'without existing query params and with no new query params' do
+      it "redirects without params" do
+        get :show, :id => short_url.unique_key
+        response.should redirect_to("http://www.doorkeeperhq.com/")
+      end
+    end
   end
 end
