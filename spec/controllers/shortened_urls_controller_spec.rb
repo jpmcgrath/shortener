@@ -8,10 +8,17 @@ shared_examples_for "good code" do
   end
 end
 
-shared_examples_for "wrong code" do
-  it "redirects to actual url" do
+shared_examples_for "wrong code with default redirect unchanged" do
+  it "redirects to default redirect" do
     get :show, :id => code
     response.should redirect_to("/")
+  end
+end
+
+shared_examples_for "wrong code with custom default redirect" do
+  it "redirects to default redirect" do
+    get :show, :id => code
+    response.should redirect_to("http://www.google.com")
   end
 end
 
@@ -30,11 +37,27 @@ describe Shortener::ShortenedUrlsController do
 
   describe "GET show with wrong code" do
     let(:code) { "testing" }
-    it_should_behave_like "wrong code"
+    it_should_behave_like "wrong code with default redirect unchanged"
   end
 
   describe "GET show with code of invalid characters" do
     let(:code) { "-" }
-    it_should_behave_like "wrong code"
+    it_should_behave_like "wrong code with default redirect unchanged"
+  end
+
+  context "custom default redirect" do
+    before do
+      Shortener.default_redirect = "http://www.google.com"
+    end
+
+    describe "GET show with wrong code" do
+      let(:code) { "testing" }
+      it_should_behave_like "wrong code with custom default redirect"
+    end
+
+    describe "GET show with code of invalid characters" do
+      let(:code) { "-" }
+      it_should_behave_like "wrong code with custom default redirect"
+    end
   end
 end

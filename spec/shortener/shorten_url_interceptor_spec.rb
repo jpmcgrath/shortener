@@ -17,7 +17,7 @@ describe Shortener::ShortenUrlInterceptor do
             "Test with URL: %{url}. hu!",
             "Test with URL: <a href='%{url}'>test</a>",
             "Test with URL: <a href=\"%{url}\">test</a>" ]
-  
+
   shared_examples_for "shortens URL in text" do |url|
     TEXTS.each do |raw_email_body_text|
       email_body_text = raw_email_body_text % {:url => url}
@@ -57,6 +57,6 @@ describe Shortener::ShortenUrlInterceptor do
     "http://d1dqic1fklzs1z.cloudfront.net/assets/doorkeeper_group_normal-3a3292fd09e39a70084c247aef60cba9.gif" # asset URL
   ].each do |url|
     it_should_behave_like "does not shorten URL", url
-  end    
+  end
 
 end
