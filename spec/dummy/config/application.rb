@@ -37,6 +37,6 @@ module Dummy
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
-    config.action_mailer.default_url_options = { :host => "mbln.jp" }
+    config.action_mailer.default_url_options = { host: "mbln.jp" }
   end
 end
