@@ -3,14 +3,14 @@ require 'spec_helper'
 
 shared_examples_for "good code" do
   it "redirects to actual url" do
-    get :show, :id => code
+    get :show, id: code
     response.should redirect_to("http://www.doorkeeperhq.com/")
   end
 end
 
 shared_examples_for "wrong code" do
   it "redirects to actual url" do
-    get :show, :id => code
+    get :show, id: code
     response.should redirect_to("/")
   end
 end

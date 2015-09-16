@@ -6,8 +6,9 @@ module Shortener
   autoload :ShortenUrlInterceptor, "shortener/shorten_url_interceptor"
 
   CHARSETS = {
-    :alphanum => ('a'..'z').to_a + (0..9).to_a,
-    :alphanumcase => ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a }
+    alphanum: ('a'..'z').to_a + (0..9).to_a,
+    alphanumcase: ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a
+  }
 
   # default key length: 5 characters
   mattr_accessor :unique_key_length
