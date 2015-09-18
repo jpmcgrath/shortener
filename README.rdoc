@@ -4,8 +4,6 @@
 
 Shortener is a Rails Engine Gem that makes it easy to create and interpret shortened URLs on your own domain from within your Rails application. Once installed Shortener will generate, store URLS and "unshorten" shortened URLs for your applications visitors, all whilst collecting basic usage metrics.
 
----
-
 == Overview
 
 The majority of the Shortener consists of three parts:
@@ -66,13 +64,17 @@ Then add to your routes:
 The gem can be configured in a config/initializers/shortener.rb file.
 
 By default, the shortener will generate keys that are 5 characters long. You can change that by specifying the length of the key like so;
+
 ```
   Shortener.unique_key_length = 6
 ```
+
 By default, when a unique key isn't matched the site is redirected to "/". You can change that by specifying a different url like so;
+
 ```
   Shortener.default_redirect = "http://www.someurl.com"
 ```
+
 == Usage
 
 To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:
@@ -111,7 +113,7 @@ And to access those URLs:
 
 You can pass in your own key when generating a shortened URL. This should be unique.
 
-  Shortener::ShortenedUrl.instance("example.com", owner: user, custom_key: "my-key")
+  Shortener::ShortenedUrl.generate("example.com", owner: user, custom_key: "my-key")
 
   short_url("http://example.com", custom_key: 'yourkey')
 
