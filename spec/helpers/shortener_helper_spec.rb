@@ -4,23 +4,41 @@ require 'spec_helper'
 describe Shortener::ShortenerHelper, type: :helper do
   describe '#short_url' do
     let(:destination) { Faker::Internet.url }
-    before do
-      expect(Shortener::ShortenedUrl).to receive(:generate).with(destination, nil).and_return(shortened_url)
-    end
 
-    context 'short url was generated' do
-      let(:shortened_url) { instance_double('ShortenedUrl', unique_key: '12345') }
+    context 'without user or custom key' do
+      before do
+        expect(Shortener::ShortenedUrl).to receive(:generate).with(destination, owner: nil, custom_key: nil).and_return(shortened_url)
+      end
 
-      it "shortens the url" do
-        expect(helper.short_url(destination)).to eq "http://test.host/12345"
+      context 'short url was generated' do
+        let(:shortened_url) { instance_double('ShortenedUrl', unique_key: '12345') }
+
+        it "shortens the url" do
+          expect(helper.short_url(destination)).to eq "http://test.host/12345"
+        end
+      end
+
+      context 'short url could not be generated' do
+        let(:shortened_url) { nil }
+
+        it 'returns the original url' do
+          expect(helper.short_url(destination)).to eq destination
+        end
       end
     end
 
-    context 'short url could not be generated' do
-      let(:shortened_url) { nil }
+    context 'with owner' do
+      let(:owner) { double('User') }
+      it 'sends user to generate function' do
+        expect(Shortener::ShortenedUrl).to receive(:generate).with(destination, owner: owner, custom_key: nil)
+        helper.short_url(destination, owner: owner)
+      end
+    end
 
-      it 'returns the original url' do
-        expect(helper.short_url(destination)).to eq destination
+    context 'with custom_key' do
+      it 'sends custom key code to generate function' do
+        expect(Shortener::ShortenedUrl).to receive(:generate).with(destination, owner: nil, custom_key: 'custkey')
+        helper.short_url(destination, custom_key: 'custkey')
       end
     end
   end

@@ -11,7 +11,7 @@ describe Shortener::ShortenedUrl, type: :model do
       let(:expected_url) { Faker::Internet.url }
 
       shared_examples_for "shortened url" do
-        let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner) }
+        let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner: owner) }
         it 'creates a shortened url record for the url' do
           expect{short_url}.to change{Shortener::ShortenedUrl.count}.by(1)
           expect(short_url.url).to eq expected_url
@@ -23,15 +23,16 @@ describe Shortener::ShortenedUrl, type: :model do
       context 'userless url' do
         let(:owner) { nil }
 
-        context 'shortened url ' do
+        context 'shortened url' do
           it_should_behave_like "shortened url" do
             let(:long_url) { expected_url }
           end
         end
 
-        context 'shortened url with partial URL' do
+        context 'shortened url with relative path' do
           it_should_behave_like "shortened url" do
-            let(:long_url) { expected_url.gsub('http://', '') }
+            let(:long_url) { Faker::Internet.slug }
+            let(:expected_url) { "/#{long_url}" }
           end
         end
 
@@ -55,17 +56,6 @@ describe Shortener::ShortenedUrl, type: :model do
       let(:url) { Faker::Internet.url }
       let!(:existing_shortened_url) { Shortener::ShortenedUrl.generate!(url) }
 
-      context 'same url as existing' do
-        let(:protocol_free_url) { url.gsub('http://', '') }
-
-        it 'finds the shortened url from protocol free url' do
-          expect(Shortener::ShortenedUrl.generate!(protocol_free_url)).to eq existing_shortened_url
-        end
-        it "should look up exsiting URL" do
-          expect(Shortener::ShortenedUrl.generate!(url)).to eq existing_shortened_url
-        end
-      end
-
       context 'different url from existing' do
         it "generates a new shortened url record for a different url" do
           expect(Shortener::ShortenedUrl.generate!(Faker::Internet.url)).not_to eq existing_shortened_url
@@ -82,6 +72,20 @@ describe Shortener::ShortenedUrl, type: :model do
           short_url = Shortener::ShortenedUrl.generate!(Faker::Internet.url)
           expect(short_url).not_to be_nil
           expect(short_url.unique_key).to eq "ABCDEF"
+        end
+      end
+    end
+
+    context "existing shortened URL with relative path" do
+      let(:path) { Faker::Internet.slug }
+      let!(:existing_shortened_url) { Shortener::ShortenedUrl.generate!(path) }
+
+      context 'same relative path' do
+        it 'finds the shortened url from slashless oath' do
+          expect(Shortener::ShortenedUrl.generate!(path)).to eq existing_shortened_url
+        end
+        it "should look up exsiting URL" do
+          expect(Shortener::ShortenedUrl.generate!("/#{path}")).to eq existing_shortened_url
         end
       end
     end

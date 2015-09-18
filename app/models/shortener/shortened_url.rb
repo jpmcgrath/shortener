@@ -1,6 +1,5 @@
 class Shortener::ShortenedUrl < ActiveRecord::Base
 
-  URL_PROTOCOL_HTTP = "http://"
   REGEX_LINK_HAS_PROTOCOL = Regexp.new('\Ahttp:\/\/|\Ahttps:\/\/', Regexp::IGNORECASE)
 
   validates :url, presence: true
@@ -10,35 +9,38 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   # ensure the url starts with it protocol and is normalized
   def self.clean_url(url)
-    return nil if url.blank?
-    url = URL_PROTOCOL_HTTP + url.strip unless url =~ REGEX_LINK_HAS_PROTOCOL
+
+    url = url.to_s.strip
+    if url !~ REGEX_LINK_HAS_PROTOCOL && url[0] != '/'
+      url = "/#{url}"
+    end
     URI.parse(url).normalize.to_s
   end
 
   # generate a shortened link from a url
   # link to a user if one specified
   # throw an exception if anything goes wrong
-  def self.generate!(orig_url, owner=nil)
+  def self.generate!(destination_url, owner: nil, custom_key: nil)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
-    if orig_url.is_a? Shortener::ShortenedUrl
-      if orig_url.owner == owner
-        result = orig_url
+    if destination_url.is_a? Shortener::ShortenedUrl
+      if destination_url.owner == owner
+        result = destination_url
       else
-        result generate!(orig_url.url, owner)
+        result = generate!(destination_url.url, owner: owner, custom_key: custom_key)
       end
     else
       scope = owner ? owner.shortened_urls : self
-      result = scope.where(url: clean_url(orig_url)).first_or_create
+      result = scope.where(url: clean_url(destination_url)).first_or_create
     end
 
     result
   end
 
   # return shortened url on success, nil on failure
-  def self.generate(orig_url, owner=nil)
+  def self.generate(destination_url, owner: nil, custom_key: nil)
     begin
-      generate!(orig_url, owner)
+      generate!(destination_url, owner: owner, custom_key: custom_key)
     rescue
       nil
     end

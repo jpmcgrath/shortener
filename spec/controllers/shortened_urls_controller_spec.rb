@@ -12,7 +12,10 @@ describe Shortener::ShortenedUrlsController, type: :controller do
 
     context 'valid keys' do
       context 'real key' do
-        let(:key) { short_url.unique_key}
+      before do
+          short_url
+        end
+        let(:key) { short_url.unique_key }
 
         it 'redirects to the destination url' do
           expect(response).to redirect_to destination

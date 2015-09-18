@@ -14,6 +14,22 @@ The majority of the Shortener consists of three parts:
 * a controller to accept incoming requests and redirecting them to the target URL;
 * a helper for generating shortened URLs from controllers and views.
 
+=== Dependencies
+
+Shortener is designed to work from within a Rails 3 and Rails 4 applications. It has dependancies Rails core components like ActiveRecord, ActionController, the rails routing engine and more.
+
+=== Ruby Version Support
+
+As Ruby 1.9.3 entered end of maintainance in early 2015, the last version of the Shortener gem
+to support Ruby 1.9.3 is 0.4.x. Shortener v0.5 onwards will require Ruby 2+.
+
+=== Upgrading
+
+==== v0.4.0 to v0.5.0
+There have been some breaking changes:
+1. The owner argument is passed into the generator and helper methods as a named parameter.
+2. Original URLs arguments without a hypertext protocol (http|https) will be assumed to be relative paths.
+
 === Some niceities of Shortener:
 
 * The controller does a 301 redirect, which is the recommended type of redirect for maintaining maximum google juice to the original URL;
@@ -30,10 +46,9 @@ The majority of the Shortener consists of three parts:
 * The system could store the shortened URL if the url is to be continually rendered;
 * Some implementations might want duplicate links to be generated each time a user request a shortened link.
 
-
 == Installation
 
-You can use the latest Rails 3 gem with the latest Shortener gem. In your Gemfile:
+Shortener is compatible with Rails v3 and v4. To install, add to your Gemfile:
 
   gem 'shortener'
 
@@ -60,17 +75,17 @@ By default, when a unique key isn't matched the site is redirected to "/". You c
 ```
 == Usage
 
-To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
+To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:
 
-  Shortener::ShortenedUrl.generate("http://dealush.com")
+  Shortener::ShortenedUrl.generate("http://example.com")
 
-or
+Alternatively, you can create a shortened url to a relative path within your application:
 
-  Shortener::ShortenedUrl.generate("dealush.com")
+  Shortener::ShortenedUrl.generate("/relative-path?param=whatever")
 
 To generate and display a shortened URL in your application use the helper method:
 
-  short_url("dealush.com")
+  short_url("http://example.com")
 
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
@@ -84,11 +99,21 @@ You can link shortened URLs to an owner, to scope them. To do so, add the follow
 
 This will allow you to pass the owner when generating URLs:
 
-  Shortener::ShortenedUrl.generate("example.com", user)
+  Shortener::ShortenedUrl.generate("example.com", owner: user)
+
+  short_url("http://example.com", owner: user)
 
 And to access those URLs:
 
   user.shortened_urls
+
+=== Shortened URLs with custom unqiue key
+
+You can pass in your own key when generating a shortened URL. This should be unique.
+
+  Shortener::ShortenedUrl.instance("example.com", owner: user, custom_key: "my-key")
+
+  short_url("http://example.com", custom_key: 'yourkey')
 
 === Shorten URLs in generated emails
 
@@ -108,7 +133,7 @@ The interceptor supports a few more arguments, see the implementation for detail
 
 == Origins
 
-Shortener is based on code from Dealush[http://example.com], for a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.com/a-simple-link-shortener-in-rails/].
+For a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.com/a-simple-link-shortener-in-rails/].
 
 == In The Wild
 
