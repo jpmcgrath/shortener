@@ -1,67 +1,99 @@
 # -*- coding: utf-8 -*-
 require 'spec_helper'
 
-describe Shortener::ShortenedUrl do
+describe Shortener::ShortenedUrl, type: :model do
   it { should belong_to :owner }
   it { should validate_presence_of :url }
 
-  shared_examples_for "shortened url" do
-    let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner) }
-    it "should be shortened" do
-      short_url.should_not be_nil
-      short_url.url.should == expected_long_url
-      short_url.unique_key.length.should == 5
-      short_url.owner.should == owner
-    end
-  end
+  describe '#generate!' do
 
-  context "shortened url" do
-    let(:long_url) { "http://www.doorkeeperhq.com/" }
-    let(:expected_long_url) { long_url }
-    let(:owner) { nil }
-    it_should_behave_like "shortened url"
-  end
+    context 'shortened url record for requested url does not exist' do
+      let(:expected_url) { Faker::Internet.url }
 
-  context "shortened url with partial URL" do
-    let(:long_url) { "www.doorkeeperhq.com" }
-    let(:expected_long_url) { "http://www.doorkeeperhq.com/" }
-    let(:owner) { nil }
-    it_should_behave_like "shortened url"
-  end
-
-  context "shortened url with i18n path" do
-    let(:long_url) { "http://www.doorkeeper.jp/%E6%97%A5%E6%9C%AC%E8%AA%9E" }
-    let(:expected_long_url) { long_url }
-    let(:owner) { nil }
-    it_should_behave_like "shortened url"
-  end
-
-  context "shortened url with user" do
-    let(:long_url) { "http://www.doorkeeperhq.com/" }
-    let(:expected_long_url) { long_url }
-    let(:owner) { User.create }
-    it_should_behave_like "shortened url"
-  end
-
-  context "existing shortened URL" do
-    before { @existing = Shortener::ShortenedUrl.generate!("http://www.doorkeeperhq.com/") }
-    it "should look up exsiting URL" do
-      Shortener::ShortenedUrl.generate!("http://www.doorkeeperhq.com/").should == @existing
-      Shortener::ShortenedUrl.generate!("www.doorkeeperhq.com").should == @existing
-    end
-    it "should generate different one for different" do
-      Shortener::ShortenedUrl.generate!("www.doorkeeper.jp").should_not == @existing
-    end
-
-    context "duplicate unique key" do
-      before do
-        Shortener::ShortenedUrl.any_instance.stub(:generate_unique_key).
-          and_return(@existing.unique_key, "ABCDEF")
+      shared_examples_for "shortened url" do
+        let(:short_url) { Shortener::ShortenedUrl.generate!(long_url, owner) }
+        it 'creates a shortened url record for the url' do
+          expect{short_url}.to change{Shortener::ShortenedUrl.count}.by(1)
+          expect(short_url.url).to eq expected_url
+          expect(short_url.unique_key.length).to eq 5
+          expect(short_url.owner).to eq owner
+        end
       end
-      it "should try until it finds a non-dup key" do
-        short_url = Shortener::ShortenedUrl.generate!("client.doorkeeper.jp")
-        short_url.should_not be_nil
-        short_url.unique_key.should == "ABCDEF"
+
+      context 'userless url' do
+        let(:owner) { nil }
+
+        context 'shortened url ' do
+          it_should_behave_like "shortened url" do
+            let(:long_url) { expected_url }
+          end
+        end
+
+        context 'shortened url with partial URL' do
+          it_should_behave_like "shortened url" do
+            let(:long_url) { expected_url.gsub('http://', '') }
+          end
+        end
+
+        context "shortened url with i18n path" do
+          it_should_behave_like "shortened url" do
+            let(:long_url) { "#{Faker::Internet.url}/%E6%97%A5%E6%9C%AC%E8%AA%9E" }
+            let(:expected_url) { long_url }
+          end
+        end
+      end
+
+      context "shortened url with user" do
+        it_should_behave_like "shortened url" do
+          let(:owner) { User.create }
+          let(:long_url) { expected_url }
+        end
+      end
+    end
+
+    context "existing shortened URL" do
+      let(:url) { Faker::Internet.url }
+      let!(:existing_shortened_url) { Shortener::ShortenedUrl.generate!(url) }
+
+      context 'same url as existing' do
+        let(:protocol_free_url) { url.gsub('http://', '') }
+
+        it 'finds the shortened url from protocol free url' do
+          expect(Shortener::ShortenedUrl.generate!(protocol_free_url)).to eq existing_shortened_url
+        end
+        it "should look up exsiting URL" do
+          expect(Shortener::ShortenedUrl.generate!(url)).to eq existing_shortened_url
+        end
+      end
+
+      context 'different url from existing' do
+        it "generates a new shortened url record for a different url" do
+          expect(Shortener::ShortenedUrl.generate!(Faker::Internet.url)).not_to eq existing_shortened_url
+        end
+      end
+
+      context "duplicate unique key" do
+        before do
+          expect_any_instance_of(Shortener::ShortenedUrl).to receive(:generate_unique_key).
+            and_return(existing_shortened_url.unique_key, 'ABCDEF')
+          Shortener::ShortenedUrl.where(unique_key: 'ABCDEF').delete_all
+        end
+        it 'should try until it finds a non-dup key' do
+          short_url = Shortener::ShortenedUrl.generate!(Faker::Internet.url)
+          expect(short_url).not_to be_nil
+          expect(short_url.unique_key).to eq "ABCDEF"
+        end
+      end
+    end
+  end
+
+  describe '#generate' do
+    context 'cannot generate a unique key' do
+      before do
+        expect(Shortener::ShortenedUrl).to receive(:generate!).and_raise(ActiveRecord::RecordNotUnique.new(nil))
+      end
+      it 'returns nil' do
+        expect(Shortener::ShortenedUrl.generate(Faker::Internet.url)).to eq nil
       end
     end
   end
