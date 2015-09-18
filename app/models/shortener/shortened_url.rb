@@ -25,7 +25,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
       if orig_url.owner == owner
         result = orig_url
       else
-        result generate!(orig_url.url, owner)
+        result = generate!(orig_url.url, owner)
       end
     else
       scope = owner ? owner.shortened_urls : self
