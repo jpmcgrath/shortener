@@ -24,8 +24,8 @@ describe Shortener::ShortenUrlInterceptor do
       it("shortens for #{email_body_text}") do
         email = create_email(email_body_text)
         short_url = Shortener::ShortenedUrl.find_by_url(url)
-        short_url.should_not be_nil
-        email.body.should == (raw_email_body_text % { url: "http://mbln.jp/#{short_url.unique_key}" })
+        expect(short_url).not_to be_nil
+        expect(email.body).to eq (raw_email_body_text % { url: "http://mbln.jp/#{short_url.unique_key}" })
       end
     end
   end
@@ -36,8 +36,8 @@ describe Shortener::ShortenUrlInterceptor do
       it("keeps URL for #{email_body_text}") do
         email = create_email(email_body_text)
         short_url = Shortener::ShortenedUrl.find_by_url(url)
-        short_url.should be_nil
-        email.body.should == email_body_text
+        expect(short_url).to be_nil
+        expect(email.body).to eq email_body_text
       end
     end
   end
