@@ -3,42 +3,70 @@ require 'spec_helper'
 
 describe Shortener::ShortenedUrlsController, type: :controller do
   let(:destination) { Faker::Internet.url }
-  let(:short_url) { Shortener::ShortenedUrl.generate(destination) }
+  let(:short_url)   { Shortener::ShortenedUrl.generate(destination) }
 
   describe '#show' do
     before do
-      get :show, id: code
+      get :show, id: key
     end
 
-    context 'real code' do
-      let(:code) { short_url.unique_key}
+    context 'valid keys' do
+      context 'real key' do
+        let(:key) { short_url.unique_key}
 
-      it 'redirects to the destination url' do
-        expect(response).to redirect_to destination
+        it 'redirects to the destination url' do
+          expect(response).to redirect_to destination
+        end
+      end
+
+      context 'real key with trailing characters' do
+        let(:key) { "#{short_url.unique_key}-" }
+
+        it 'redirects to the destination url' do
+          expect(response).to redirect_to destination
+        end
       end
     end
 
-    context 'real code with trailing characters' do
-      let(:code) { "#{short_url.unique_key}-" }
+    context 'invalid keys' do
+      context 'non existant key' do
+        let(:key) { "nonexistantkey" }
 
-      it 'redirects to the destination url' do
-        expect(response).to redirect_to destination
+        it 'redirects to the root url' do
+          expect(response).to redirect_to root_url
+        end
       end
-    end
 
-    context 'wrong code' do
-      let(:code) { "wrongcode" }
+      context 'key with invalid characters' do
+        let(:key) { "-" }
 
-      it 'redirects to the root url' do
-        expect(response).to redirect_to root_url
+        it 'redirects to the root url' do
+          expect(response).to redirect_to root_url
+        end
       end
-    end
 
-    context 'code with invalid characters' do
-      let(:code) { "-" }
+      context "custom default redirect set" do
+        before do
+          Shortener.default_redirect = 'http://www.default_redirect.com'
+          # call again for the get is done with the setting
+          get :show, id: key
+        end
 
-      it 'redirects to the root url' do
-        expect(response).to redirect_to root_url
+        context 'non existant key' do
+          let(:key) { "nonexistantkey" }
+
+          it 'redirects to the root url' do
+            expect(response).to redirect_to 'http://www.default_redirect.com'
+          end
+        end
+
+        context 'key with invalid characters' do
+          let(:key) { "-" }
+
+          it 'redirects to the root url' do
+            expect(response).to redirect_to 'http://www.default_redirect.com'
+          end
+        end
       end
     end
   end

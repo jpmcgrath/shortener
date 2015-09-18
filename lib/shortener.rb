@@ -20,6 +20,10 @@ module Shortener
   mattr_accessor :charset
   self.charset = :alphanum
 
+  #The default redirection url when the key isn't found
+  mattr_accessor :default_redirect
+  self.default_redirect = '/'
+
   def self.key_chars
     CHARSETS[charset]
   end

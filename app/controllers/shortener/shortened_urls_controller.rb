@@ -22,7 +22,7 @@ class Shortener::ShortenedUrlsController < ActionController::Base
     else
       # if we don't find the shortened link, redirect to the root
       # make this configurable in future versions
-      redirect_to '/'
+      redirect_to Shortener.default_redirect
     end
   end
 
