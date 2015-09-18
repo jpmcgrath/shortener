@@ -6,4 +6,8 @@ module Shortener::ShortenerHelper
     short_url ? url_for(controller: :"shortener/shortened_urls", action: :show, id: short_url.unique_key, only_path: false) : url
   end
 
+  def original_url(url)
+    Shortener::ShortenedUrl.original_url(url)
+  end
+
 end
