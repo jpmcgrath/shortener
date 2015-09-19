@@ -24,6 +24,10 @@ module Shortener
   mattr_accessor :default_redirect
   self.default_redirect = '/'
 
+  # forbidden keys
+  mattr_accessor :forbidden_keys
+  self.forbidden_keys = []
+
   def self.key_chars
     CHARSETS[charset]
   end

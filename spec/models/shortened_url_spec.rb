@@ -62,6 +62,33 @@ describe Shortener::ShortenedUrl, type: :model do
         end
       end
 
+      context 'same url as existing' do
+        it 'returns the same shortened link record' do
+          expect(Shortener::ShortenedUrl.generate!(url)).to eq existing_shortened_url
+        end
+      end
+
+      context 'same url as existing, but with a different owner' do
+        let(:owner) { User.create }
+        it 'returns the a new shortened link record' do
+          expect(Shortener::ShortenedUrl.generate!(url, owner: owner)).not_to eq existing_shortened_url
+        end
+      end
+
+      context 'existing shortened url as argument' do
+        let(:owner) { User.create }
+        it 'returns the a new shortened link record' do
+          expect(Shortener::ShortenedUrl.generate!(existing_shortened_url)).to eq existing_shortened_url
+        end
+      end
+
+      context 'existing shortened url as argument, with new owner' do
+        let(:owner) { User.create }
+        it 'returns the a new shortened link record' do
+          expect(Shortener::ShortenedUrl.generate!(existing_shortened_url, owner: owner)).not_to eq existing_shortened_url
+        end
+      end
+
       context "duplicate unique key" do
         before do
           expect_any_instance_of(Shortener::ShortenedUrl).to receive(:generate_unique_key).
@@ -99,6 +126,19 @@ describe Shortener::ShortenedUrl, type: :model do
       it 'returns nil' do
         expect(Shortener::ShortenedUrl.generate(Faker::Internet.url)).to eq nil
       end
+    end
+  end
+
+  describe 'unexpired scope' do
+    let(:permanent_url)   { described_class.generate(Faker::Internet.url) }
+    let!(:expired_url)     { described_class.generate(Faker::Internet.url, expires_at: 2.hour.ago) }
+    let!(:unexpired_url)   { described_class.generate(Faker::Internet.url, expires_at: 1.hour.since) }
+    let!(:unexpired_scope)  { described_class.unexpired }
+
+    it "should contain permanent and unexpired records" do
+      expect(unexpired_scope).to     include(permanent_url)
+      expect(unexpired_scope).to     include(unexpired_url)
+      expect(unexpired_scope).not_to include(expired_url)
     end
   end
 end

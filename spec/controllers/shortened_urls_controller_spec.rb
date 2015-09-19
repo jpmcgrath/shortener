@@ -12,9 +12,6 @@ describe Shortener::ShortenedUrlsController, type: :controller do
 
     context 'valid keys' do
       context 'real key' do
-      before do
-          short_url
-        end
         let(:key) { short_url.unique_key }
 
         it 'redirects to the destination url' do
@@ -68,6 +65,16 @@ describe Shortener::ShortenedUrlsController, type: :controller do
 
           it 'redirects to the root url' do
             expect(response).to redirect_to 'http://www.default_redirect.com'
+          end
+        end
+      end
+
+      context 'expired code' do
+        let(:expired_url) { Shortener::ShortenedUrl.generate(Faker::Internet.url, expires_at: 1.hour.ago) }
+        describe "GET show with expired code" do
+          let(:key) { expired_url.unique_key }
+          it 'redirects to the default url' do
+            expect(response).to redirect_to Shortener.default_redirect
           end
         end
       end

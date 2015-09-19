@@ -7,6 +7,9 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # allows the shortened link to be associated with a user
   belongs_to :owner, polymorphic: true
 
+  # exclude records in which expiration time is set and expiration time is greater than current time
+  scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.current.to_s(:db)))) }
+
   # ensure the url starts with it protocol and is normalized
   def self.clean_url(url)
 
@@ -20,28 +23,29 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # generate a shortened link from a url
   # link to a user if one specified
   # throw an exception if anything goes wrong
-  def self.generate!(destination_url, owner: nil, custom_key: nil)
+  def self.generate!(destination_url, owner: nil, custom_key: nil, expires_at: nil)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
     if destination_url.is_a? Shortener::ShortenedUrl
       if destination_url.owner == owner
         result = destination_url
       else
-        result = generate!(destination_url.url, owner: owner, custom_key: custom_key)
+        result = generate!(destination_url.url, owner: owner, custom_key: custom_key, expires_at: expires_at)
       end
     else
       scope = owner ? owner.shortened_urls : self
-      result = scope.where(url: clean_url(destination_url)).first_or_create
+      result = scope.where(url: clean_url(destination_url)).first_or_create(unique_key: custom_key, expires_at: expires_at)
     end
 
     result
   end
 
   # return shortened url on success, nil on failure
-  def self.generate(destination_url, owner: nil, custom_key: nil)
+  def self.generate(destination_url, owner: nil, custom_key: nil, expires_at: nil)
     begin
-      generate!(destination_url, owner: owner, custom_key: custom_key)
-    rescue
+      generate!(destination_url, owner: owner, custom_key: custom_key, expires_at: expires_at)
+    rescue => e
+      logger.info e
       nil
     end
   end

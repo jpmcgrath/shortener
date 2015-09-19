@@ -14,6 +14,9 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
       # how many times the link has been clicked
       t.integer :use_count, null: false, default: 0
 
+      # valid until date for expirable urls
+      t.datetime :expires_at
+
       t.timestamps
     end
 
