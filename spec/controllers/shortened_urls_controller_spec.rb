@@ -6,8 +6,9 @@ describe Shortener::ShortenedUrlsController, type: :controller do
   let(:short_url)   { Shortener::ShortenedUrl.generate(destination) }
 
   describe '#show' do
+    let(:params) { {} }
     before do
-      get :show, id: key
+      get :show, { id: key }.merge(params)
     end
 
     context 'valid keys' do
@@ -24,6 +25,33 @@ describe Shortener::ShortenedUrlsController, type: :controller do
 
         it 'redirects to the destination url' do
           expect(response).to redirect_to destination
+        end
+      end
+
+      context 'parameters on short url' do
+        let(:params) { { foo: 34, bar: 49 } }
+        let(:key) { short_url.unique_key }
+
+        context 'no parameters on long url' do
+          it 'redirects to the destination url with the parmeters' do
+            redirect_url_params = Rack::Utils.parse_nested_query(URI.parse(response.location).query)
+
+            expect(redirect_url_params['foo']).to eq '34'
+            expect(redirect_url_params['bar']).to eq '49'
+            expect(response.code).to eq '301'
+          end
+        end
+        context 'clashing parameters on long url' do
+          let(:destination) { "#{Faker::Internet.url}?foo=26&noclash=56" }
+
+          it 'redirects to the destination url with the parmeters on the short url taking priority' do
+            redirect_url_params = Rack::Utils.parse_nested_query(URI.parse(response.location).query)
+
+            expect(redirect_url_params['foo']).to     eq '34'
+            expect(redirect_url_params['bar']).to     eq '49'
+            expect(redirect_url_params['noclash']).to eq '56'
+            expect(response.code).to eq '301'
+          end
         end
       end
     end

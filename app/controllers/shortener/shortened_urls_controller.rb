@@ -17,8 +17,20 @@ class Shortener::ShortenedUrlsController < ActionController::Base
         sl.increment!(:use_count)
         ActiveRecord::Base.connection.close
       end
+
+      params.except! *[:id, :action, :controller]
+      url = sl.url
+
+      if params.present?
+        uri = URI.parse(sl.url)
+        existing_params = Rack::Utils.parse_nested_query(uri.query)
+        merged_params   = existing_params.merge(params)
+        uri.query       = merged_params.to_query
+        url             = uri.to_s
+      end
+
       # do a 301 redirect to the destination url
-      redirect_to sl.url, status: :moved_permanently
+      redirect_to url, status: :moved_permanently
     else
       # if we don't find the shortened link, redirect to the root
       # make this configurable in future versions
