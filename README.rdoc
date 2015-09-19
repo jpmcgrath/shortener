@@ -58,7 +58,7 @@ This generator will create a migration to create the shortened_urls table where 
 
 Then add to your routes:
 
-  match '/:id' => "shortener/shortened_urls#show"
+  get '/:id' => "shortener/shortened_urls#show"
 
 == Configuration
 The gem can be configured in a config/initializers/shortener.rb file.
