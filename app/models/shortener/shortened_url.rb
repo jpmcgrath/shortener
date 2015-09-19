@@ -50,6 +50,16 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     end
   end
 
+  def self.generate_with_options!(orig_url, args = {})
+    generate(orig_url, args.fetch(:owner, nil)).update_attributes args
+  end
+
+  def self.generate_with_options(orig_url, args = {})
+    generate_with_options!(orig_url, args)
+  rescue
+    nil
+  end
+
   private
 
   # the create method changed in rails 4...
