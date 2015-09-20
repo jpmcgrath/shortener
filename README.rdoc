@@ -132,6 +132,15 @@ You can omit owner passing nil instead:
 
   Shortener::ShortenedUrl.generate("example.com/page", nil, expires_at: 24.hours.since)
 
+=== Fresh Links
+
+Sometimes you just need that feeling of a fresh, untouched Shortened URL. By default,
+Shortener will find an existing ShortenedUrl record for a supplied URL. If you want
+to create a fresh record, you can pass the following argument:
+
+  Shortener::ShortenedUrl.generate("example.com/page", fresh: true)
+  short_url("http://example.com", fresh: true)
+
 === Forbidden keys
 
 You can ensure that records with forbidden keys will not be generated.
