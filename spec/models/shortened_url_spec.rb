@@ -52,6 +52,19 @@ describe Shortener::ShortenedUrl, type: :model do
       end
     end
 
+    context "request a fresh shortened URL" do
+      let(:url) { Faker::Internet.url }
+      it "shouldn't create duplicate urls" do
+        Shortener::ShortenedUrl.generate!(url)
+        expect{Shortener::ShortenedUrl.generate!(url)}.not_to change{Shortener::ShortenedUrl.count}
+      end
+
+      it "should create a fresh shortened urls" do
+        Shortener::ShortenedUrl.generate!(url)
+        expect{Shortener::ShortenedUrl.generate!(url, fresh: true)}.to change{Shortener::ShortenedUrl.count}.by(1)
+      end
+    end
+
     context "existing shortened URL" do
       let(:url) { Faker::Internet.url }
       let!(:existing_shortened_url) { Shortener::ShortenedUrl.generate!(url) }

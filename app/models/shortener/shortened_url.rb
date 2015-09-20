@@ -23,27 +23,37 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # generate a shortened link from a url
   # link to a user if one specified
   # throw an exception if anything goes wrong
-  def self.generate!(destination_url, owner: nil, custom_key: nil, expires_at: nil)
+  def self.generate!(destination_url, owner: nil, custom_key: nil, expires_at: nil, fresh: false)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
     if destination_url.is_a? Shortener::ShortenedUrl
       if destination_url.owner == owner
         result = destination_url
       else
-        result = generate!(destination_url.url, owner: owner, custom_key: custom_key, expires_at: expires_at)
+        result = generate!(destination_url.url,
+                            owner:      owner,
+                            custom_key: custom_key,
+                            expires_at: expires_at,
+                            fresh:      fresh
+                          )
       end
     else
       scope = owner ? owner.shortened_urls : self
-      result = scope.where(url: clean_url(destination_url)).first_or_create(unique_key: custom_key, expires_at: expires_at)
+
+      if fresh
+        result = scope.where(url: clean_url(destination_url)).create(unique_key: custom_key, expires_at: expires_at)
+      else
+        result = scope.where(url: clean_url(destination_url)).first_or_create(unique_key: custom_key, expires_at: expires_at)
+      end
     end
 
     result
   end
 
   # return shortened url on success, nil on failure
-  def self.generate(destination_url, owner: nil, custom_key: nil, expires_at: nil)
+  def self.generate(destination_url, owner: nil, custom_key: nil, expires_at: nil, fresh: false)
     begin
-      generate!(destination_url, owner: owner, custom_key: custom_key, expires_at: expires_at)
+      generate!(destination_url, owner: owner, custom_key: custom_key, expires_at: expires_at, fresh: fresh)
     rescue => e
       logger.info e
       nil
