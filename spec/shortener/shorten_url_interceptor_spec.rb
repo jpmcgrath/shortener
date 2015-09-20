@@ -46,6 +46,7 @@ describe Shortener::ShortenUrlInterceptor do
     "http://client.doorkeeper.jp/events/124-",
     "http://client.doorkeeper.jp/events/124-title?auth_token=xabagangs",
     "http://client.doorkeeper.jp/events/124-%E4%F6%A0",
+    "https://www.test-site.com/"
   ].each do |url|
     it_should_behave_like "shortens URL in text", url
   end
