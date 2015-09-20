@@ -89,6 +89,10 @@ To generate and display a shortened URL in your application use the helper metho
 
   short_url("http://example.com")
 
+Pass in subdomain, protocol and other options that the UrlHelper url_for accepts:
+
+  short_url("http://example.com", url_options: { subdomain: 'foo', host: 'bar, protocol: 'https' } )
+
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
 === Shortened URLs with owner
