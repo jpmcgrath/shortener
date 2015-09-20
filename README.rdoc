@@ -170,3 +170,15 @@ If you are using Shortener in your project and would like to be added to this li
 * {James McGrath}[https://github.com/jpmcgrath]
 * {Michael Reinsch}[https://github.com/mreinsch]
 
+== Contributing
+
+New feature requests are welcome, code is more welcome still. Code with Specs is the
+most welcomiest there is!
+
+To contribute:
+
+1. Fork it
+2. Create your feature branch (git checkout -b my-new-feature)
+3. Commit your changes (git commit -am 'Add some feature')
+4. Push to the branch (git push origin my-new-feature)
+5. Create a new Pull Request
