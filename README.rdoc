@@ -28,6 +28,17 @@ There have been some breaking changes:
 1. The owner argument is passed into the generator and helper methods as a named parameter.
 2. Original URLs arguments without a hypertext protocol (http|https) will be assumed to be relative paths.
 
+=== v0.5.1 to v0.5.2
+v0.5.2 introduced the ability to set an expiration date for a shortened URL. The expiration dates
+are stored in a expires_at column in the database, which can be added to your schema with the following
+migration:
+
+  class AddExpiresAtToShortenedUrl < ActiveRecord::Migration
+    def change
+      add_column :shortened_urls, :expires_at, :datetime
+    end
+  end
+
 === Some niceities of Shortener:
 
 * The controller does a 301 redirect, which is the recommended type of redirect for maintaining maximum google juice to the original URL;
