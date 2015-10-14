@@ -124,7 +124,7 @@ And to access those URLs:
 
   user.shortened_urls
 
-=== Shortened URLs with custom unqiue key
+=== Shortened URLs with custom unique key
 
 You can pass in your own key when generating a shortened URL. This should be unique.
 
