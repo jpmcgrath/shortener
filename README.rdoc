@@ -52,7 +52,6 @@ migration:
 * There has not been an attempt to remove ambiguous characters (i.e. 1 l and capital i, or 0 and O etc.) from the unique key generated for the link. This means people might copy the link incorrectly if copying the link by hand;
 * The system could pre-generate unique keys in advance, avoiding the database penalty when checking that a newly generated key is unique;
 * The system could store the shortened URL if the url is to be continually rendered;
-* Some implementations might want duplicate links to be generated each time a user request a shortened link.
 
 == Installation
 
