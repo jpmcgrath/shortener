@@ -2,8 +2,8 @@
 require 'spec_helper'
 
 # user defined in dummy app, uses has_shortened_urls
-describe User do
-  it { should have_many :shortened_urls }
+describe User, type: :model do
+  it { is_expected.to have_many(:shortened_urls) }
 
   context 'shortened url created with owner' do
     let (:user) { User.create }
