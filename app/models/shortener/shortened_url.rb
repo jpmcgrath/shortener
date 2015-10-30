@@ -63,7 +63,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     /^([#{Shortener.key_chars.join}]*).*/.match(token_str)[1]
   end
 
-  def self.fetch_with_token(token:, additional_params: {})
+  def self.fetch_with_token(token: nil, additional_params: {})
 
     shortened_url = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
 
@@ -77,7 +77,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     { url: url, shortened_url: shortened_url }
   end
 
-  def self.merge_params_to_url(url:, params: {})
+  def self.merge_params_to_url(url: nil, params: {})
     params.try(:except!, *[:id, :action, :controller])
 
     if params.present?
