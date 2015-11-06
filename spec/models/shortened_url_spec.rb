@@ -154,4 +154,104 @@ describe Shortener::ShortenedUrl, type: :model do
       expect(unexpired_scope).not_to include(expired_url)
     end
   end
+
+  describe '#increment_use_count' do
+    let(:url) { 'https://example.com'}
+    let(:short_url) { Shortener::ShortenedUrl.generate!(url) }
+    it 'increments the use_count on the shortenedLink' do
+      original_count = short_url.use_count
+      short_url.increment_usage_count
+      sleep 0.001
+      expect(short_url.use_count).to eq (original_count + 1)
+    end
+  end
+
+  describe '#merge_params_to_url' do
+    context 'without params on original url' do
+      let(:url) { 'https://example.com'}
+
+      context 'no additional params' do
+        let(:params) { nil }
+
+        it 'returns the original url' do
+          expect(Shortener::ShortenedUrl.merge_params_to_url(url: url, params: params)).to eq 'https://example.com'
+        end
+      end
+
+      context 'additional params' do
+        let(:params) { {foo: 'bar', hello: 'world' } }
+
+        it 'merges the params to create a new url' do
+          expect(Shortener::ShortenedUrl.merge_params_to_url(url: url, params: params)).to eq 'https://example.com?foo=bar&hello=world'
+        end
+      end
+    end
+
+    context 'with params on original url' do
+      let(:url) { 'http://example.com/pathname?different=yes&foo=test'}
+
+      context 'no additional params' do
+        let(:params) { nil }
+
+        it 'returns the original url' do
+          expect(Shortener::ShortenedUrl.merge_params_to_url(url: url, params: params)).to eq 'http://example.com/pathname?different=yes&foo=test'
+        end
+      end
+
+      context 'additional params' do
+        let(:params) { {foo: 'manchoo', hello: 'world' } }
+
+        it 'merges the params to create a new url with the new params taking preceedence' do
+          expect(Shortener::ShortenedUrl.merge_params_to_url(url: url, params: params)).to eq 'http://example.com/pathname?different=yes&foo=manchoo&hello=world'
+        end
+      end
+    end
+  end
+
+  describe '#fetch_with_token' do
+    shared_examples_for 'invalid token supplied' do
+      context 'default_path set' do
+        it 'returns the default_redirect url, but no shortened url' do
+          Shortener.default_redirect = "/default_path"
+          result = Shortener::ShortenedUrl.fetch_with_token(token: nil)
+          expect(result[:url]).to eq '/default_path'
+          expect(result[:shortened_url]).to eq nil
+        end
+      end
+      context 'no default_path set' do
+        it 'returns the root path, but no shortened url' do
+          Shortener.default_redirect = nil
+          result = Shortener::ShortenedUrl.fetch_with_token(token: nil)
+          expect(result[:url]).to eq '/'
+          expect(result[:shortened_url]).to eq nil
+        end
+      end
+    end
+
+    context 'invalid token' do
+      it_should_behave_like 'invalid token supplied' do
+        let(:token) { 'invalid_token'}
+      end
+    end
+
+    context 'valid token' do
+      let(:url) { Faker::Internet.url }
+
+      context 'non expired short url' do
+        let(:short_url) { Shortener::ShortenedUrl.generate!(url) }
+        it 'returns both the url and the shortened url' do
+          result = Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key)
+          expect(result[:url]).to eq url
+          expect(result[:shortened_url]).to eq short_url
+        end
+      end
+
+      context 'expired short url' do
+        let(:short_url) { Shortener::ShortenedUrl.generate!(url, expires_at: 1.second.ago) }
+        it_should_behave_like 'invalid token supplied' do
+          let(:token) { short_url.unique_key }
+        end
+      end
+    end
+  end
 end
