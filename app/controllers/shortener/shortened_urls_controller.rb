@@ -5,7 +5,6 @@ class Shortener::ShortenedUrlsController < ActionController::Base
     # only use the leading valid characters
     token = /^([#{Shortener.key_chars.join}]*).*/.match(params[:id])[1]
 
-    # pull the link out of the db
     sl = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
 
     if sl
@@ -32,8 +31,6 @@ class Shortener::ShortenedUrlsController < ActionController::Base
       # do a 301 redirect to the destination url
       redirect_to url, status: :moved_permanently
     else
-      # if we don't find the shortened link, redirect to the root
-      # make this configurable in future versions
       redirect_to Shortener.default_redirect
     end
   end
