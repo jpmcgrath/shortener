@@ -1,4 +1,4 @@
-{<img src="https://secure.travis-ci.org/jpmcgrath/shortener.png?branch=master" alt="Build Status" />}[http://travis-ci.org/jpmcgrath/shortener]
+{<img src="https://secure.travis-ci.org/jpmcgrath/shortener.png?branch=master" alt="Build Status" />}[http://travis-ci.org/jpmcgrath/shortener]  {<img src="https://codeclimate.com/github/jpmcgrath/shortener/badges/gpa.svg" />}[https://codeclimate.com/github/jpmcgrath/shortener]
 
 = Shortener
 
