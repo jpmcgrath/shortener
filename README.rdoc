@@ -58,6 +58,12 @@ By default, when a unique key isn't matched the site is redirected to "/". You c
 ```
   Shortener.default_redirect = "http://www.someurl.com"
 ```
+
+Setting a default host:
+```
+  Shortener.default_host = "http://smrl.co"
+```
+If you have a separate short domain for short links, set the default host to that short domain. This will make the email interceptor & urls generated with the `short_url` helper use this domain.
 == Usage
 
 To generate a Shortened URL object for the URL "http://dealush.com" within your controller / models do the following:
@@ -73,6 +79,9 @@ To generate and display a shortened URL in your application use the helper metho
   short_url("dealush.com")
 
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
+You can also use this helper with a Shortener::ShortenedUrl object, like so:
+
+  short_url(user.shortened_urls.last)
 
 === Shortened URLs with owner
 
