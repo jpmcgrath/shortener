@@ -24,6 +24,9 @@ module Shortener
   mattr_accessor :default_redirect
   self.default_redirect = '/'
 
+  # default host for rendering shortened urls
+  mattr_accessor :default_host
+
   def self.key_chars
     CHARSETS[charset]
   end
