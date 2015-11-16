@@ -27,6 +27,14 @@ module Shortener
   # default host for rendering shortened urls
   mattr_accessor :default_host
 
+  # default separator for characters
+  mattr_accessor :character_separator
+  self.character_separator = ""
+
+  # default attempts to generate unique key
+  mattr_accessor :default_attempt_limit
+  self.default_attempt_limit = 5
+
   def self.key_chars
     CHARSETS[charset]
   end

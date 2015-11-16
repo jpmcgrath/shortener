@@ -68,7 +68,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
       self.unique_key = generate_unique_key
       super()
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => err
-      if (count +=1) < 5
+      if (count +=1) < Shortener.default_attempt_limit
         logger.info("retrying with different unique key")
         retry
       else
@@ -83,7 +83,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   def generate_unique_key
     # not doing uppercase as url is case insensitive
     charset = ::Shortener.key_chars
-    (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join
+    (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join Shortener.character_separator
   end
 
 end
