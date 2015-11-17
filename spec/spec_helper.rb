@@ -5,7 +5,6 @@ require 'shortener'
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 require 'rspec/rails'
 require 'shoulda/matchers'
-require 'byebug'
 require 'faker'
 
 Rails.backtrace_cleaner.remove_silencers!
