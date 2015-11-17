@@ -68,6 +68,27 @@ Setting a default host:
 
 If you have a separate short domain for short links, set the default host to that short domain. This will make the email interceptor &amp; urls generated with the `short_url` helper use this domain.
 
+Then when mounting the endpoint in your routes file, you may want to do something like this:
+
+  # config/routes.rb
+  class DomainConstraint
+    def initialize(*domains)
+      @domains = domains
+    end
+
+    def matches?(request)
+      @domains.include? request.host
+    end
+  end
+
+  MyApp::Application.routes.draw do
+    constraints DomainConstraint.new(Shortener.default_host) do
+      get '/:id' => "shortener/shortened_urls#show"
+      root to: redirect("https://www.looksharp.com")
+    end
+    # ...
+  end
+
 === Alternative charset
 To set up a different charset for unique keys
 
