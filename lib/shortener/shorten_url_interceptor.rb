@@ -52,9 +52,9 @@ Usage:
     end
 
     def self.infer_base_url
-      host = ActionMailer::Base.default_url_options[:host]
+      host = Shortener.default_host.presence || ActionMailer::Base.default_url_options[:host]
       if host.blank?
-        raise "Please supply :base_url for ShortenUrlInterceptor or define default_url_options for mailer"
+        raise "Please set Shortener.default_host, supply :base_url for ShortenUrlInterceptor or define default_url_options for mailer"
       else
         "http://#{host}/"
       end
