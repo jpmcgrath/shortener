@@ -17,7 +17,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
     url = url.to_s.strip
     if url !~ REGEX_LINK_HAS_PROTOCOL && url[0] != '/'
-      url = "/#{url}"
+      url = "http://#{url}"
     end
     URI.parse(url).normalize.to_s
   end
