@@ -18,6 +18,15 @@ describe Shortener::ShortenedUrlsController, type: :controller do
         it 'redirects to the destination url' do
           expect(response).to redirect_to destination
         end
+
+        context "when user agent is a crawler" do
+          it "calls fetch with token with false" do
+            @request.user_agent = "aranhabot"
+            expect(Shortener::ShortenedUrl).to receive(:fetch_with_token).with(hash_including(track: false)).and_call_original
+
+            get :show, { id: key }.merge(params)
+          end
+        end
       end
 
       context 'real key with trailing characters' do
