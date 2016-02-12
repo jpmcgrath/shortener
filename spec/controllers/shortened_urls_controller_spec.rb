@@ -19,9 +19,12 @@ describe Shortener::ShortenedUrlsController, type: :controller do
           expect(response).to redirect_to destination
         end
 
-        context "when user agent is a crawler" do
-          it "calls fetch with token with false" do
-            @request.user_agent = "aranhabot"
+        context "when request is not from an human" do
+          before do
+            allow_any_instance_of(Rack::Request).to receive(:human?).and_return(false)
+          end
+
+          it "calls fetch with token with track argument as false" do
             expect(Shortener::ShortenedUrl).to receive(:fetch_with_token).with(hash_including(track: false)).and_call_original
 
             get :show, { id: key }.merge(params)
