@@ -105,8 +105,9 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   CREATE_METHOD_NAME =
     if Rails::VERSION::MAJOR >= 4
       # And again in 4.0.6/4.1.2
-      if ((Rails::VERSION::MINOR == 0) && (Rails::VERSION::TINY < 6)) ||
-         ((Rails::VERSION::MINOR == 1) && (Rails::VERSION::TINY < 2))
+      if Rails::VERSION::MAJOR == 4 && (
+          ((Rails::VERSION::MINOR == 0) && (Rails::VERSION::TINY < 6)) ||
+          ((Rails::VERSION::MINOR == 1) && (Rails::VERSION::TINY < 2)))
         "create_record"
       else
         "_create_record"
