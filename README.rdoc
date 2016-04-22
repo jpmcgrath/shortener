@@ -217,6 +217,7 @@ For a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.co
 Shortener is used in a number of production systems, including, but not limited to:
 
 {Doorkeeper - An Event Management Tool}[http://www.doorkeeperhq.com/]
+{1001tweets - Repost your tweets to get more clicks}[http://www.1001tweets.com/]
 
 If you are using Shortener in your project and would like to be added to this list, please get in touch!
 
