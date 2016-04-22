@@ -99,6 +99,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     end
   end
 
+  def to_param
+    unique_key
+  end
+
   private
 
   # the create method changed in rails 4...
