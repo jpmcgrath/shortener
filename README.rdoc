@@ -85,6 +85,16 @@ the upper and lower case charset, by including the following:
 
   Shortener.charset = :alphanumcase
 
+You can also specify global default parameters to be used with
+- <tt>Shortener::ShortenerHelper.short_url</tt>
+- <tt>Shortener::ShortenedUrl.generate</tt>
+- and <tt>Shortener::ShortenedUrl.generate!</tt>
+
+Any parameter explicitly passed to these functions takes precedence over the default parameters.
+
+  Shortener.default_shortening_params = { fresh: true,
+                                          url_options: { locale: nil}}
+
 == Usage
 
 To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:

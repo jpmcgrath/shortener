@@ -129,6 +129,96 @@ describe Shortener::ShortenedUrl, type: :model do
         end
       end
     end
+
+    describe 'using Shortener#default_shortening_params' do
+      let(:full_params) do
+        { owner: nil,
+          custom_key: 'default_custkey',
+          expires_at: 'default_testtime',
+          fresh: false,
+          url_options: { subdomain: 'bar', protocol: 'http'} }
+      end
+      let(:partial_params) do
+        { fresh: true,
+          url_options: { protocol: 'http',
+                         host: 'foobar'}  }
+      end
+      let(:adhoc_params) { Shortener.adhoc_shortening_params }
+
+      shared_examples_for 'URL shortening with default_shortening_params' do
+        let(:destination) { Faker::Internet.url }
+
+        before do
+          Shortener.default_shortening_params = default_shortening_params
+        end
+
+        it 'passes the right parameters to do_generate! function' do
+          expect(Shortener::ShortenedUrl)
+            .to receive(:do_generate!)
+            .with(destination, params_for_generate)
+          if params_for_short_url
+            Shortener::ShortenedUrl.generate(destination, params_for_short_url)
+          else
+            Shortener::ShortenedUrl.generate(destination)
+          end
+        end
+      end
+
+      context 'with parameters passed to short_url' do
+        let(:passed_params) do
+          { owner: double('User', shortened_urls: destination),
+            custom_key: 'custkey',
+            expires_at: 'testtime',
+            fresh: true,
+            url_options: { subdomain: 'foo', protocol: 'https'} }
+        end
+
+        let(:default_shortening_params) { full_params }
+        let(:params_for_short_url)      { passed_params }
+        let(:params_for_generate)       { passed_params.except(:url_options) }
+        let(:params_for_url_for)        { passed_params[:url_options] }
+
+        it_behaves_like 'URL shortening with default_shortening_params'
+      end
+
+      context 'with no parameters passed to short_url function' do
+        let(:default_shortening_params) { full_params }
+        let(:params_for_short_url)      { nil }
+        let(:params_for_generate)       { default_shortening_params.except(:url_options) }
+        let(:params_for_url_for)        { default_shortening_params[:url_options] }
+
+        it_behaves_like 'URL shortening with default_shortening_params'
+      end
+
+      context 'with parameters missing in call to short_url function' do
+        let(:default_shortening_params) { full_params }
+        let(:merged_params)             { default_shortening_params.deep_merge(partial_params) }
+        let(:params_for_short_url)      { partial_params }
+        let(:params_for_generate)       { merged_params.except(:url_options) }
+        let(:params_for_url_for)        { merged_params[:url_options] }
+
+        it_behaves_like 'URL shortening with default_shortening_params'
+      end
+
+      context 'with partial default parameters' do
+        let(:default_shortening_params) { partial_params }
+        let(:merged_params)             { adhoc_params.deep_merge(default_shortening_params) }
+        let(:params_for_short_url)      { nil }
+        let(:params_for_generate)       { merged_params.except(:url_options) }
+        let(:params_for_url_for)        { merged_params[:url_options] }
+
+        it_behaves_like 'URL shortening with default_shortening_params'
+      end
+
+      context 'with default parameters set to nil' do
+        let(:default_shortening_params) { nil }
+        let(:params_for_short_url)      { nil }
+        let(:params_for_generate)       { adhoc_params.except(:url_options) }
+        let(:params_for_url_for)        { adhoc_params[:url_options] }
+
+        it_behaves_like 'URL shortening with default_shortening_params'
+      end
+    end
   end
 
   describe '#generate' do
