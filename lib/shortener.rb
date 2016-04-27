@@ -28,6 +28,19 @@ module Shortener
   mattr_accessor :forbidden_keys
   self.forbidden_keys = []
 
+  # default shortening params
+  mattr_accessor :adhoc_shortening_params, instance_writer: false
+  self.adhoc_shortening_params = {
+    owner: nil,
+    custom_key: nil,
+    expires_at: nil,
+    fresh: false,
+    url_options: {}
+  }
+
+  mattr_accessor :default_shortening_params
+  self.default_shortening_params = {}
+
   def self.key_chars
     CHARSETS[charset]
   end
