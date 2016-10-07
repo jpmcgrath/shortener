@@ -1,4 +1,4 @@
-require "active_support/dependencies"
+require "active_support/all"
 
 module Shortener
 
