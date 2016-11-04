@@ -23,11 +23,19 @@ describe Shortener::ShortenedUrlsController, type: :controller do
           before do
             allow_any_instance_of(Rack::Request).to receive(:human?).and_return(false)
           end
-
-          it "calls fetch with token with track argument as false" do
-            expect(Shortener::ShortenedUrl).to receive(:fetch_with_token).with(hash_including(track: false)).and_call_original
-
-            get :show, { id: key }.merge(params)
+          context 'Shortener.ignore_robots == true' do
+            it "calls fetch with token with track argument as false" do
+              Shortener.ignore_robots = true
+              expect(Shortener::ShortenedUrl).to receive(:fetch_with_token).with(hash_including(track: false)).and_call_original
+              get :show, { id: key }
+            end
+          end
+          context 'Shortener.ignore_robots == false (default)' do
+            it "calls fetch with token with track argument as true" do
+              Shortener.ignore_robots = false
+              expect(Shortener::ShortenedUrl).to receive(:fetch_with_token).with(hash_including(track: true)).and_call_original
+              get :show, { id: key }
+            end
           end
         end
       end

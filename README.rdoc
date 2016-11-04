@@ -158,6 +158,16 @@ In rails you can put next line into config/initializers/shortener.rb
 
   Shortener.forbidden_keys.concat %w(terms promo)
 
+=== Ignoring Robots
+
+By default Shortener will count all visits to a shortened url, including any crawler
+robots like the Google Web Crawler, or Twitter's link unshortening bot. To ignore
+these visits, Shortener makes use of the excellent voight_kampff gem to identify
+web robots. This feature is disabled by default. To enable add the following to
+your shortener configuration:
+
+  Shortener.ignore_robots = true
+
 === URL Parameters
 
 Parameters are passed though from the shortened url, to the destination URL. If the destination
