@@ -39,6 +39,21 @@ migration:
     end
   end
 
+=== v0.5.6 to v0.6.1
+v0.6.1 introduced the ability to category a shortened URL. The category value
+is stored in a string column in the database, which can be added to your schema with the following
+migration:
+
+  bundle exec rails g migration add_category_to_shortened_url
+
+
+  class AddCategoryToShortenedUrl < ActiveRecord::Migration
+    def change
+      add_column :shortened_urls, :category, :string
+      add_index :shortened_urls, :category
+    end
+  end
+
 === Some niceities of Shortener:
 
 * The controller does a 301 redirect, which is the recommended type of redirect for maintaining maximum google juice to the original URL;
@@ -228,6 +243,7 @@ Shortener is used in a number of production systems, including, but not limited 
 
 - {Doorkeeper - An Event Management Tool}[http://www.doorkeeperhq.com/]
 - {1001tweets - Repost your tweets to get more clicks}[http://www.1001tweets.com/]
+- {NewsMaker.io - The curated newsletter builder}[https://www.newsmaker.io/]
 
 If you are using Shortener in your project and would like to be added to this list, please get in touch!
 
