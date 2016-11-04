@@ -64,12 +64,11 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     /^([#{Regexp.escape(Shortener.key_chars.join)}]*).*/.match(token_str)[1]
   end
 
-  def self.fetch_with_token(token: nil, additional_params: {})
-
+  def self.fetch_with_token(token: nil, additional_params: {}, track: true)
     shortened_url = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
 
     url = if shortened_url
-      shortened_url.increment_usage_count
+      shortened_url.increment_usage_count if track
       merge_params_to_url(url: shortened_url.url, params: additional_params)
     else
       Shortener.default_redirect || '/'
