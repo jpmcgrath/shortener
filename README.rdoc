@@ -40,11 +40,11 @@ migration:
   end
 
 === v0.5.6 to v0.6.1
-v0.6.1 introduced the ability to category a shortened URL. The category value
-is stored in a string column in the database, which can be added to your schema with the following
+v0.6.1 introduced the ability to categorize a shortened URL. The category value
+is stored in a string column in the database, which must be added to your schema with the following
 migration:
 
-  bundle exec rails g migration add_category_to_shortened_url
+  bundle exec rails g migration add_category_to_shortened_url category:string:index
 
 
   class AddCategoryToShortenedUrl < ActiveRecord::Migration
