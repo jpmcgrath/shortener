@@ -1,5 +1,5 @@
 class Shortener::ShortenedUrl < ActiveRecord::Base
-
+  attr_accessible :unique_key, :expires_at
   REGEX_LINK_HAS_PROTOCOL = Regexp.new('\Ahttp:\/\/|\Ahttps:\/\/', Regexp::IGNORECASE)
 
   validates :url, presence: true
