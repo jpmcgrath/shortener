@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email                     = [ "gems@jamespmcgrath.com", "michael@mobalean.com" ]
   s.homepage                  = "http://jamespmcgrath.com/projects/shortener"
   s.rubyforge_project         = "shortener"
-  s.required_rubygems_version = "> 1.3.6"
+  s.required_rubygems_version = "> 2.1.0"
   s.add_dependency "rails", ">= 3.0.7"
   s.add_dependency "voight_kampff", '~> 1.1'
   s.add_development_dependency "sqlite3"
