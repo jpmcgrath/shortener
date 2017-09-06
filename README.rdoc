@@ -64,7 +64,6 @@ migration:
 
 === Future improvements:
 
-* There has not been an attempt to remove ambiguous characters (i.e. 1 l and capital i, or 0 and O etc.) from the unique key generated for the link. This means people might copy the link incorrectly if copying the link by hand;
 * The system could pre-generate unique keys in advance, avoiding the database penalty when checking that a newly generated key is unique;
 * The system could store the shortened URL if the url is to be continually rendered;
 
@@ -99,6 +98,9 @@ By default, Shortener will generate unique keys using numbers and lowercase a-z.
 the upper and lower case charset, by including the following:
 
   Shortener.charset = :alphanumcase
+
+The `:alphanum_no_ambiguous` and `:alphanumcase_no_ambiguous` charsets are also available if you desire to avoid ambiguous characters
+('i', 'o', 'l', 'I', 'O', '0', '1') in the unique keys.
 
 == Usage
 

@@ -5,9 +5,14 @@ module Shortener
   autoload :ActiveRecordExtension, "shortener/active_record_extension"
   autoload :ShortenUrlInterceptor, "shortener/shorten_url_interceptor"
 
+  AMBIGUOUS_CHARACTERS = ['i', 'o', 'l', 'I', 'O', '0', '1'].freeze
+
   CHARSETS = {
-    alphanum: ('a'..'z').to_a + (0..9).to_a,
-    alphanumcase: ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a
+    alphanum: ('a'..'z').to_a + (0..9).map(&:to_s).to_a,
+    alphanumcase: ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).map(&:to_s).to_a,
+    alphanum_no_ambiguous: ('a'..'z').to_a + (0..9).map(&:to_s).to_a - AMBIGUOUS_CHARACTERS,
+    alphanumcase_no_ambiguous:
+      ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).map(&:to_s).to_a - AMBIGUOUS_CHARACTERS
   }
 
   # default key length: 5 characters
@@ -15,8 +20,10 @@ module Shortener
   self.unique_key_length = 5
 
   # character set to chose from:
-  #  :alphanum     - a-z0-9     -  has about 60 million possible combos
-  #  :alphanumcase - a-zA-Z0-9  -  has about 900 million possible combos
+  #  :alphanum     - a-z0-9
+  #  :alphanumcase - a-zA-Z0-9
+  #  :alphanum_no_ambiguous - alphanum without ambiguous characters
+  #  :alphanumcase_no_ambiguous - alphanumcase without ambiguous characters
   mattr_accessor :charset
   self.charset = :alphanum
 
