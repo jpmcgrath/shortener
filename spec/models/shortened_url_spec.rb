@@ -7,6 +7,51 @@ describe Shortener::ShortenedUrl, type: :model do
 
   describe '#generate!' do
 
+    context 'shortened url uses the specified character set' do
+      let(:long_url) { Faker::Internet.url }
+
+      before(:all) do
+        # By specifying a large unique key length, we dramatically decrease the
+        # probability of both false positives and false negatives in the tests.
+        Shortener.unique_key_length = 100
+      end
+
+      after(:all) do
+        Shortener.unique_key_length = 5
+      end
+
+      it 'has no uppercase characters with :alphanum charset' do
+        Shortener.charset = :alphanum
+        short_url = Shortener::ShortenedUrl.generate(long_url)
+        expect(short_url.unique_key.downcase).to eq(short_url.unique_key)
+      end
+
+      it 'has uppercase characters with :alphanumcase charset' do
+        # There is a miniscule probability, specifically 2.46e-24, that this
+        # test will fail falsely by generating a unique key consisting of no
+        # upper case characters.
+        Shortener.charset = :alphanumcase
+        short_url = Shortener::ShortenedUrl.generate(long_url)
+        expect(short_url.unique_key.downcase).not_to eq(short_url.unique_key)
+      end
+
+      it 'has no ambiguous characters with :alphanum_no_ambiguous charset' do
+        Shortener.charset = :alphanum_no_ambiguous
+        short_url = Shortener::ShortenedUrl.generate(long_url)
+        Shortener::AMBIGUOUS_CHARACTERS.each do |ambiguous_character|
+          expect(short_url.unique_key).not_to include(ambiguous_character)
+        end
+      end
+
+      it 'has no ambiguous characters with :alphanumcase_no_ambiguous charset' do
+        Shortener.charset = :alphanumcase_no_ambiguous
+        short_url = Shortener::ShortenedUrl.generate(long_url)
+        Shortener::AMBIGUOUS_CHARACTERS.each do |ambiguous_character|
+          expect(short_url.unique_key).not_to include(ambiguous_character)
+        end
+      end
+    end
+
     context 'shortened url record for requested url does not exist' do
       let(:expected_url) { Faker::Internet.url }
 
