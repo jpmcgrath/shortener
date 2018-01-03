@@ -28,13 +28,17 @@ module Shortener
   mattr_accessor :forbidden_keys
   self.forbidden_keys = []
 
+  # forbidden chars
+  mattr_accessor :forbidden_chars
+  self.forbidden_chars = []
+
   # ignore_robots - set to true to not count visits by identified webcrawlers
   mattr_accessor :ignore_robots
   self.ignore_robots = false
 
 
   def self.key_chars
-    CHARSETS[charset]
+    CHARSETS[charset] - forbidden_chars
   end
 end
 
