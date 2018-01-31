@@ -1,4 +1,4 @@
-class CreateShortenedUrlsTable < ActiveRecord::Migration
+class CreateShortenedUrlsTable < ActiveRecord::Migration<%= migration_version %>
   def change
     create_table :shortened_urls do |t|
       # we can link this to a user for interesting things
@@ -13,6 +13,10 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
 
       # a category to help categorize shortened urls
       t.string :category
+
+      # to store a reference as additional info
+      t.string :reference
+      t.integer :reference_id
 
       # how many times the link has been clicked
       t.integer :use_count, null: false, default: 0

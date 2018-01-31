@@ -56,8 +56,8 @@ describe Shortener::ShortenedUrlsController, type: :controller do
           it 'redirects to the destination url with the parmeters' do
             redirect_url_params = Rack::Utils.parse_nested_query(URI.parse(response.location).query)
 
-            expect(redirect_url_params['foo']).to eq '34'
-            expect(redirect_url_params['bar']).to eq '49'
+            expect(redirect_url_params['foo']).to eq nil
+            expect(redirect_url_params['bar']).to eq nil
             expect(response.code).to eq '301'
           end
         end
@@ -67,8 +67,8 @@ describe Shortener::ShortenedUrlsController, type: :controller do
           it 'redirects to the destination url with the parmeters on the short url taking priority' do
             redirect_url_params = Rack::Utils.parse_nested_query(URI.parse(response.location).query)
 
-            expect(redirect_url_params['foo']).to     eq '34'
-            expect(redirect_url_params['bar']).to     eq '49'
+            expect(redirect_url_params['foo']).to     eq '26'
+            expect(redirect_url_params['bar']).to     eq nil
             expect(redirect_url_params['noclash']).to eq '56'
             expect(response.code).to eq '301'
           end

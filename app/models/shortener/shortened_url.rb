@@ -25,7 +25,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   # generate a shortened link from a url
   # link to a user if one specified
   # throw an exception if anything goes wrong
-  def self.generate!(destination_url, owner: nil, custom_key: nil, expires_at: nil, fresh: false, category: nil)
+  def self.generate!(destination_url, owner: nil, custom_key: nil, expires_at: nil, fresh: false, category: nil, reference: nil, reference_id: nil)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
     result = if destination_url.is_a? Shortener::ShortenedUrl
@@ -38,14 +38,16 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
           custom_key: custom_key,
           expires_at: expires_at,
           fresh:      fresh,
-          category:   category
+          category:   category,
+          reference: reference,
+          reference_id: reference_id
         )
       end
     else
       scope = owner ? owner.shortened_urls : self
       creation_method = fresh ? 'create' : 'first_or_create'
-
-      scope.where(url: clean_url(destination_url), category: category).send(
+      
+      scope.where(url: clean_url(destination_url), category: category, reference: reference, reference_id: reference_id).send(
         creation_method,
         unique_key: custom_key,
         custom_key: custom_key,
@@ -57,7 +59,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   # return shortened url on success, nil on failure
-  def self.generate(destination_url, owner: nil, custom_key: nil, expires_at: nil, fresh: false, category: nil)
+  def self.generate(destination_url, owner: nil, custom_key: nil, expires_at: nil, fresh: false, category: nil, reference: nil, reference_id: nil)
     begin
       generate!(
         destination_url,
@@ -65,7 +67,9 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
         custom_key: custom_key,
         expires_at: expires_at,
         fresh: fresh,
-        category: category
+        category: category,
+        reference: reference,
+        reference_id: reference_id
       )
     rescue => e
       logger.info e
