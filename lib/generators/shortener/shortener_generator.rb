@@ -17,7 +17,13 @@ class ShortenerGenerator < Rails::Generators::Base
   end
 
   def create_migration_file
-    migration_template 'migration.rb', 'db/migrate/create_shortened_urls_table.rb'
+    migration_template 'migration.rb', 'db/migrate/create_shortened_urls_table.rb', migration_version: migration_version
+  end
+
+  def migration_version
+    if Rails::VERSION::MAJOR == 5
+      "[#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]"
+    end
   end
 
 end
