@@ -123,7 +123,6 @@ describe Shortener::ShortenedUrl, type: :model do
 
       context "duplicate unique key" do
         let(:duplicate_key) { 'ABCDEF' }
-
         it 'should try until it finds a non-dup key' do
           Shortener::ShortenedUrl.where(unique_key: duplicate_key).delete_all
           Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
@@ -180,8 +179,7 @@ describe Shortener::ShortenedUrl, type: :model do
     it 'increments the use_count on the shortenedLink' do
       original_count = short_url.use_count
       short_url.increment_usage_count
-      sleep 0.001
-      expect(short_url.use_count).to eq (original_count + 1)
+      expect(short_url.reload.use_count).to eq (original_count + 1)
     end
   end
 

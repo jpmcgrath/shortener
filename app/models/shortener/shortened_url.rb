@@ -109,7 +109,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def increment_usage_count
-    increment!(:use_count)
+    self.class.increment_counter(:use_count, id)
   end
 
   def to_param
