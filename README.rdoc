@@ -183,6 +183,28 @@ your shortener configuration:
 
   Shortener.ignore_robots = true
 
+=== Mounting on a Subdomain
+
+If you want to constrain the shortener route to a subdomain, the following config will
+prevent the subdomain parameter from leaking in to shortened URLs if it matches the configured subdomain.
+
+Within config/initializers/shortener.rb
+
+  Shortener.subdomain = 's'
+
+Within config/routes.rb
+
+  constraints subdomain: 's' do
+    get '/:id' => "shortener/shortened_urls#show"
+  end
+
+Without setting the subdomain config the URL
+> http://destination.com
+Would shorten into:
+> http://s.coolapp.io/ABCDEF?subdomain=s
+Instead of the expected:
+> http://s.coolapp.io/ABCDEF
+
 === URL Parameters
 
 Parameters are passed though from the shortened url, to the destination URL. If the destination

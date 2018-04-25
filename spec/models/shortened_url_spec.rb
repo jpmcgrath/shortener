@@ -222,6 +222,21 @@ describe Shortener::ShortenedUrl, type: :model do
           expect(Shortener::ShortenedUrl.merge_params_to_url(url: url, params: params)).to eq 'http://example.com/pathname?different=yes&foo=manchoo&hello=world'
         end
       end
+
+      context 'with Shortener.subdomain configured' do
+        let(:url) { 'http://example.com/pathname'}
+
+        before { expect(Shortener).to receive(:subdomain).and_return('go') }
+
+        it 'filters the subdomain parameter if it matches the subdomain' do
+          params = {foo: 'test', subdomain: 'go' }
+          expect(Shortener::ShortenedUrl.merge_params_to_url(url: url, params: params)).to eq 'http://example.com/pathname?foo=test'
+        end
+        it 'merges the subdomain parameter if it does not match the subdomain' do
+          params = {foo: 'test', subdomain: 's' }
+          expect(Shortener::ShortenedUrl.merge_params_to_url(url: url, params: params)).to eq 'http://example.com/pathname?foo=test&subdomain=s'
+        end
+      end
     end
   end
 
