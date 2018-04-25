@@ -93,12 +93,14 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def self.merge_params_to_url(url: nil, params: {})
-    params.try(:except!, *[:id, :action, :controller])
+    if params.respond_to?(:permit!)
+      params = params.permit!.to_h.with_indifferent_access.except!(:id, :action, :controller)
+    end
 
     if params.present?
       uri = URI.parse(url)
       existing_params = Rack::Utils.parse_nested_query(uri.query)
-      uri.query       = existing_params.symbolize_keys.merge(params).to_query
+      uri.query       = existing_params.with_indifferent_access.merge(params).to_query
       url = uri.to_s
     end
 
