@@ -21,5 +21,5 @@ end
 if ActiveRecord::Migrator.respond_to?(:migrate)
   ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
 else
-  ActiveRecord::Base.connection.migration_context.migrate
+  ActiveRecord::MigrationContext.new(File.expand_path("../dummy/db/migrate/", __FILE__)).migrate
 end
