@@ -12,6 +12,10 @@ module Shortener::ShortenerHelper
     )
 
     if short_url
+      if subdomain = Shortener.subdomain
+        url_options = url_options.merge(subdomain: subdomain)
+      end
+
       options = { controller: :"/shortener/shortened_urls", action: :show, id: short_url.unique_key, only_path: false }.merge(url_options)
       url_for(options)
     else

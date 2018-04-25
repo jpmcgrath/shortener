@@ -33,7 +33,7 @@ v0.5.2 introduced the ability to set an expiration date for a shortened URL. The
 are stored in a expires_at column in the database, which can be added to your schema with the following
 migration:
 
-  class AddExpiresAtToShortenedUrl < ActiveRecord::Migration
+  class AddExpiresAtToShortenedUrl < ActiveRecord::Migration[4.2]
     def change
       add_column :shortened_urls, :expires_at, :datetime
     end
@@ -47,7 +47,7 @@ migration:
   bundle exec rails g migration add_category_to_shortened_url category:string:index
 
 
-  class AddCategoryToShortenedUrl < ActiveRecord::Migration
+  class AddCategoryToShortenedUrl < ActiveRecord::Migration[4.2]
     def change
       add_column :shortened_urls, :category, :string
       add_index :shortened_urls, :category
@@ -182,6 +182,21 @@ web robots. This feature is disabled by default. To enable add the following to
 your shortener configuration:
 
   Shortener.ignore_robots = true
+
+=== Mounting on a Subdomain
+
+If you want to constrain the shortener route to a subdomain, the following config will
+prevent the subdomain parameter from leaking in to shortened URLs if it matches the configured subdomain.
+
+Within config/initializers/shortener.rb
+
+  Shortener.subdomain = 's'
+
+Within config/routes.rb
+
+  constraints subdomain: 's' do
+    get '/:id' => "shortener/shortened_urls#show"
+  end
 
 === URL Parameters
 

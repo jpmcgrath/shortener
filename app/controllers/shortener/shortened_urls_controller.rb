@@ -1,5 +1,3 @@
-require 'voight_kampff'
-
 class Shortener::ShortenedUrlsController < ActionController::Base
   include Shortener
 
