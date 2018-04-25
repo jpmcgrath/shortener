@@ -6,6 +6,9 @@ rvm:
   - 2.4
   - 2.5
 
+matrix:
+  fast_finish: true
+
 gemfile:
   - gemfiles/rails_4.gemfile
   - gemfiles/rails_5.0.gemfile
