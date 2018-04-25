@@ -198,13 +198,6 @@ Within config/routes.rb
     get '/:id' => "shortener/shortened_urls#show"
   end
 
-Without setting the subdomain config the URL
-> http://destination.com
-Would shorten into:
-> http://s.coolapp.io/ABCDEF?subdomain=s
-Instead of the expected:
-> http://s.coolapp.io/ABCDEF
-
 === URL Parameters
 
 Parameters are passed though from the shortened url, to the destination URL. If the destination
