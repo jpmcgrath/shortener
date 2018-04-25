@@ -17,15 +17,6 @@ Shoulda::Matchers.configure do |config|
   end
 end
 
-# Patch over Rails 4 -> 5 Migration API changes.
-unless ActiveRecord::Migration.respond_to?(:[])
-  class ActiveRecord::Migration
-    def self.[](*args)
-      self
-    end
-  end
-end
-
 # Run any available migration
 if ActiveRecord::Migrator.respond_to?(:migrate)
   ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
