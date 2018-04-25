@@ -109,11 +109,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def increment_usage_count
-    Thread.new do
-      ActiveRecord::Base.connection_pool.with_connection do |conn|
-        increment!(:use_count)
-      end
-    end
+    increment!(:use_count)
   end
 
   def to_param
