@@ -1,4 +1,4 @@
-class CreateShortenedUrlsTable < ActiveRecord::Migration
+class CreateShortenedUrlsTable < ActiveRecord::Migration[4.2]
   def change
     create_table :shortened_urls do |t|
       # we can link this to a user for interesting things
@@ -6,7 +6,7 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
       t.string :owner_type, limit: 20
 
       # the real url that we will redirect to
-      t.text :url, null: false
+      t.text :url, null: false, length: 2083
 
       # the unique key
       t.string :unique_key, limit: 10, null: false
@@ -26,7 +26,7 @@ class CreateShortenedUrlsTable < ActiveRecord::Migration
     # we will lookup the links in the db by key, urls and owners.
     # also make sure the unique keys are actually unique
     add_index :shortened_urls, :unique_key, unique: true
-    add_index :shortened_urls, :url
+    add_index :shortened_urls, :url, length: 2083
     add_index :shortened_urls, [:owner_id, :owner_type]
     add_index :shortened_urls, :category
   end
