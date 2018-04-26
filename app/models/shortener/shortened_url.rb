@@ -4,6 +4,8 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   validates :url, presence: true
 
+  before_create :generate_unique_key
+
   # allows the shortened link to be associated with a user
   belongs_to :owner, polymorphic: true
 
@@ -47,7 +49,6 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
       scope.where(url: clean_url(destination_url), category: category).send(
         creation_method,
-        unique_key: custom_key,
         custom_key: custom_key,
         expires_at: expires_at
       )
@@ -93,12 +94,14 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def self.merge_params_to_url(url: nil, params: {})
-    params.try(:except!, *[:id, :action, :controller])
+    if params.respond_to?(:permit!)
+      params = params.permit!.to_h.with_indifferent_access.except!(:id, :action, :controller)
+    end
 
     if params.present?
       uri = URI.parse(url)
       existing_params = Rack::Utils.parse_nested_query(uri.query)
-      uri.query       = existing_params.symbolize_keys.merge(params).to_query
+      uri.query       = existing_params.with_indifferent_access.merge(params).to_query
       url = uri.to_s
     end
 
@@ -106,11 +109,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def increment_usage_count
-    Thread.new do
-      ActiveRecord::Base.connection_pool.with_connection do |conn|
-        increment!(:use_count)
-      end
-    end
+    self.class.increment_counter(:use_count, id)
   end
 
   def to_param
@@ -119,46 +118,15 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   private
 
-  # the create method changed in rails 4...
-  CREATE_METHOD_NAME =
-    if Rails::VERSION::MAJOR >= 5
-      "_create_record"
-    elsif Rails::VERSION::MAJOR == 4
-      # And again in 4.0.6/4.1.2
-      if Rails::VERSION::MAJOR == 4 && (
-          ((Rails::VERSION::MINOR == 0) && (Rails::VERSION::TINY < 6)) ||
-          ((Rails::VERSION::MINOR == 1) && (Rails::VERSION::TINY < 2)))
-        "create_record"
-      else
-        "_create_record"
-      end
-  else
-    "create"
-  end
-
-  # we'll rely on the DB to make sure the unique key is really unique.
-  # if it isn't unique, the unique index will catch this and raise an error
-  define_method CREATE_METHOD_NAME do
-    count = 0
-    begin
-      self.unique_key = custom_key || generate_unique_key
-      super()
-    rescue ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => err
-      logger.info("Failed to generate ShortenedUrl with unique_key: #{unique_key}")
-      self.unique_key = nil
-      if (count +=1) < 5
-        logger.info("retrying with different unique key")
-        retry
-      else
-        logger.info("too many retries, giving up")
-        raise
-      end
-    end
-  end
-
   def generate_unique_key
+    begin
+      self.unique_key = custom_key || self.class.unique_key_candidate
+      self.custom_key = nil
+    end while self.class.exists?(unique_key: unique_key) && custom_key.blank?
+  end
+
+  def self.unique_key_candidate
     charset = ::Shortener.key_chars
     (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join
   end
-
 end

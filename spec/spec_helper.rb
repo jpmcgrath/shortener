@@ -18,4 +18,8 @@ Shoulda::Matchers.configure do |config|
 end
 
 # Run any available migration
-ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
+if ActiveRecord::Migrator.respond_to?(:migrate)
+  ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
+else
+  ActiveRecord::MigrationContext.new(File.expand_path("../dummy/db/migrate/", __FILE__)).migrate
+end
