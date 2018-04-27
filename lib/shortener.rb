@@ -10,6 +10,10 @@ module Shortener
     alphanumcase: ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a
   }
 
+  # subdomain if not mounted on site root
+  mattr_accessor :subdomain
+  self.subdomain = false
+
   # default key length: 5 characters
   mattr_accessor :unique_key_length
   self.unique_key_length = 5
