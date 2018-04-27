@@ -98,8 +98,8 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
       params = params.permit!.to_h.with_indifferent_access.except!(:id, :action, :controller)
     end
 
-    if hosted_subdomain = Shortener.subdomain
-      params.try(:except!, :subdomain) if params[:subdomain] == hosted_subdomain
+    if Shortener.subdomain
+      params.try(:except!, :subdomain) if params[:subdomain] == Shortener.subdomain
     end
 
     if params.present?
