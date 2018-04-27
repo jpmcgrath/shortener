@@ -205,7 +205,7 @@ URL has the same parameters as the destination URL, the parameters on the shorte
 precedence over those on the destination URL.
 
 For example, if we have an orginal URL of:
-> http://destination.com?test=yes&happy=defo (idenfified with token ABCDEF)
+> http://destination.com?test=yes&happy=defo (identified with token ABCDEF)
 Which is shortened into:
 > http://coolapp.io/s/ABCDEF?test=no&why=not
 Then, the resulting URL will be:
