@@ -226,7 +226,7 @@ describe Shortener::ShortenedUrl, type: :model do
       context 'with Shortener.subdomain configured' do
         let(:url) { 'http://example.com/pathname'}
 
-        before { expect(Shortener).to receive(:subdomain).and_return('go') }
+        before { allow(Shortener).to receive(:subdomain).and_return('go') }
 
         it 'filters the subdomain parameter if it matches the subdomain' do
           params = {foo: 'test', subdomain: 'go' }
