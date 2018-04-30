@@ -80,6 +80,8 @@ After you install Shortener run the generator:
 
 This generator will create a migration to create the shortened_urls table where your shortened URLs will be stored.
 
+*Note:* The default length of the url field in the generated migration is 2083. This is because MySQL requires fixed length indicies and browsers have a defacto limit on URL length. This may not be right for you or your database. The discussion can be seen here https://github.com/jpmcgrath/shortener/pull/98
+
 Then add to your routes:
 
   get '/:id' => "shortener/shortened_urls#show"
