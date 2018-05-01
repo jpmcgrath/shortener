@@ -264,20 +264,19 @@ Shortener is used in a number of production systems, including, but not limited 
 
 If you are using Shortener in your project and would like to be added to this list, please get in touch!
 
-== Authors
-
-* {James McGrath}[https://github.com/jpmcgrath]
-* {Michael Reinsch}[https://github.com/mreinsch]
-
 == Contributing
 
-New feature requests are welcome, code is more welcome still. Code with Specs is the
-most welcomiest there is!
+We welcome new contributors. Because we're all busy people, and because Shortener
+is used/relied upon by many projects, it is essential that new Pull Requests
+are opened with good spec coverage, and a passing build on supported ruby versions
+and Rails versions.
 
 To contribute:
 
 1. Fork it
 2. Create your feature branch (git checkout -b my-new-feature)
-3. Commit your changes (git commit -am 'Add some feature')
-4. Push to the branch (git push origin my-new-feature)
-5. Create a new Pull Request
+3. Write spec coverage of changes
+4. Commit your changes (git commit -am 'Add some feature')
+5. Push to the branch (git push origin my-new-feature)
+6. Create a new Pull Request
+7. Ensure the build is passing
