@@ -280,3 +280,5 @@ To contribute:
 5. Push to the branch (git push origin my-new-feature)
 6. Create a new Pull Request
 7. Ensure the build is passing
+
+Note: We adhere to the community driven Ruby style guide: https://github.com/bbatsov/ruby-style-guide
