@@ -35,7 +35,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   def self.generate!(destination_url, owner: nil, custom_key: nil, expires_at: nil, fresh: false, category: nil)
     # if we get a shortened_url object with a different owner, generate
     # new one for the new owner. Otherwise return same object
-    result = if destination_url.is_a? Shortener::ShortenedUrl
+    if destination_url.is_a? Shortener::ShortenedUrl
       if destination_url.owner == owner
         destination_url
       else
@@ -60,8 +60,6 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
         )
       end
     end
-
-    result
   end
 
   # return shortened url on success, nil on failure
