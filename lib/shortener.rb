@@ -38,7 +38,7 @@ module Shortener
 
 
   def self.key_chars
-    CHARSETS[charset]
+    charset.is_a?(Symbol) ? CHARSETS[charset] : charset
   end
 end
 
