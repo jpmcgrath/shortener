@@ -36,6 +36,9 @@ module Shortener
   mattr_accessor :ignore_robots
   self.ignore_robots = false
 
+  # persist_retries - number of retries on ActiveRecord::RecordNotUnique error
+  mattr_accessor :persist_retries
+  self.persist_retries = 3
 
   def self.key_chars
     CHARSETS[charset]
