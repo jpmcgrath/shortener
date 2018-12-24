@@ -4,7 +4,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   validates :url, presence: true
 
-  around_create :generate_unique_key
+  before_create :generate_unique_key
 
   # allows the shortened link to be associated with a user
   if ActiveRecord::VERSION::MAJOR >= 5
@@ -52,11 +52,13 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
       scope = owner ? owner.shortened_urls : self
       creation_method = fresh ? 'create' : 'first_or_create'
 
-      scope.where(url: clean_url(destination_url), category: category).send(
-        creation_method,
-        custom_key: custom_key,
-        expires_at: expires_at
-      )
+      yield_with_retry(custom_key: custom_key,
+                       expires_at: expires_at) do |attributes|
+        scope.where(url: clean_url(destination_url), category: category).send(
+          creation_method,
+          attributes
+        )
+      end
     end
   end
 
@@ -125,21 +127,25 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   private
 
+  def generate_unique_key
+    self.unique_key = custom_key || self.class.unique_key_candidate
+    self.custom_key = nil
+  end
+
   def self.unique_key_candidate
     charset = ::Shortener.key_chars
     (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join
   end
 
-  def generate_unique_key(retries = Shortener.persist_retries)
-    self.unique_key = custom_key || self.class.unique_key_candidate
-    self.custom_key = nil
-
-    yield
+  def self.yield_with_retry(attributes, retries = Shortener.persist_retries)
+    yield attributes
   rescue ActiveRecord::RecordNotUnique
     if retries <= 0
       raise
     else
       retries -= 1
+      attributes[:custom_key] = nil
+
       retry
     end
   end

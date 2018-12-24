@@ -126,7 +126,7 @@ describe Shortener::ShortenedUrl, type: :model do
         it 'should try until it finds a non-dup key' do
           Shortener::ShortenedUrl.where(unique_key: duplicate_key).delete_all
           Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
-          short_url = Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
+          short_url = Shortener::ShortenedUrl.generate!(Faker::Internet.url, custom_key: duplicate_key)
           expect(short_url).not_to be_nil
           expect(short_url.unique_key).not_to be_nil
           expect(short_url.unique_key).not_to eq duplicate_key
