@@ -84,16 +84,17 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def self.fetch_with_token(token: nil, additional_params: {}, track: true)
-    shortened_url = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
-
-    url = if shortened_url
-      shortened_url.increment_usage_count if track
-      merge_params_to_url(url: shortened_url.url, params: additional_params)
+    if ::Shortener.cache_urls
+      cache_key = "shortener:#{token}"
+      cache_key << ":#{Digest::MD5.hexdigest(additional_params.to_s)}" if additional_params.present?
+      result = Rails.cache.fetch(cache_key, expires_in: ::Shortener.cache_expiration) do
+        lookup_by_token(token, additional_params, false)
+      end
+      result[:shortened_url].increment_usage_count if track && result[:shortened_url]
+      result
     else
-      Shortener.default_redirect || '/'
+      lookup_by_token(token, additional_params, track)
     end
-
-    { url: url, shortened_url: shortened_url }
   end
 
   def self.merge_params_to_url(url: nil, params: {})
@@ -124,6 +125,19 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   private
+
+  def self.lookup_by_token(token, additional_params, track)
+    shortened_url = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
+
+    url = if shortened_url
+            shortened_url.increment_usage_count if track
+            merge_params_to_url(url: shortened_url.url, params: additional_params)
+          else
+            Shortener.default_redirect || '/'
+          end
+
+    { url: url, shortened_url: shortened_url }
+  end
 
   def self.unique_key_candidate
     charset = ::Shortener.key_chars

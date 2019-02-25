@@ -2,7 +2,12 @@
 require 'spec_helper'
 
 describe Shortener::ShortenedUrl, type: :model do
-  it { is_expected.to belong_to :owner }
+  if ActiveRecord::VERSION::MAJOR >= 5
+    it { is_expected.to belong_to(:owner).optional }
+  else
+    it { is_expected.to belong_to :owner }
+  end
+
   it { is_expected.to validate_presence_of :url }
 
   describe '#generate!' do
@@ -278,9 +283,30 @@ describe Shortener::ShortenedUrl, type: :model do
       end
     end
 
+    shared_context 'caching enabled' do
+      around do |example|
+        current = Shortener.cache_urls
+        Shortener.cache_urls = true
+        example.run
+        Shortener.cache_urls = current
+      end
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+      let(:cache) { Rails.cache }
+      before do
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        Rails.cache.clear
+      end
+    end
+
     context 'invalid token' do
       it_should_behave_like 'invalid token supplied' do
         let(:token) { 'invalid_token'}
+      end
+
+      include_context 'caching enabled' do
+        it_should_behave_like 'invalid token supplied' do
+          let(:token) { 'invalid_token'}
+        end
       end
     end
 
@@ -302,6 +328,67 @@ describe Shortener::ShortenedUrl, type: :model do
           it "does not increment use count" do
             expect_any_instance_of(Shortener::ShortenedUrl).not_to receive(:increment_usage_count)
             Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key, track: false)
+          end
+        end
+
+        include_context 'caching enabled' do
+          context 'on first request' do
+            it 'caches the model' do
+              expect(cache.exist?("shortener:#{short_url.unique_key}")).to eq false
+              result = Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key)
+              expect(cache.read("shortener:#{short_url.unique_key}")).to eq result
+            end
+            it "increments use count" do
+              expect_any_instance_of(Shortener::ShortenedUrl).to receive(:increment_usage_count)
+              Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key)
+            end
+
+            context 'with cache_expiration configured' do
+              around do |example|
+                current = Shortener.cache_expiration
+                Shortener.cache_expiration = 5.minutes
+                example.run
+                Shortener.cache_expiration = current
+              end
+              it 'caches the model for the specified duration' do
+                Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key)
+                entry = cache.send(:read_entry, "shortener:#{short_url.unique_key}", {})
+                expected_expiration = Time.now.to_f + Shortener.cache_expiration
+                expect(entry.expires_at).to be_within(5).of(expected_expiration)
+              end
+            end
+
+            context 'with additional_params' do
+              it 'caches using a digest of the given params' do
+                params = {foo: :bar}
+                result = Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key, additional_params: params)
+                cache_key = "shortener:#{short_url.unique_key}:#{Digest::MD5.hexdigest(params.to_s)}"
+                expect(cache.read(cache_key)).to eq result
+              end
+            end
+          end
+
+          context 'on subsequent requests' do
+            let(:cached) { {url: url, shortened_url: short_url} }
+            before do
+              cache.write("shortener:#{short_url.unique_key}", cached)
+              expect_any_instance_of(ActiveRecord::Relation).to receive(:first).never
+            end
+
+            it 'retrieves from cache' do
+              result = Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key)
+              expect(result).to eq cached
+            end
+            it 'increments use count' do
+              expect_any_instance_of(Shortener::ShortenedUrl).to receive(:increment_usage_count)
+              Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key)
+            end
+            context 'with track set to false' do
+              it 'does not increment use count' do
+                expect_any_instance_of(Shortener::ShortenedUrl).not_to receive(:increment_usage_count)
+                Shortener::ShortenedUrl.fetch_with_token(token: short_url.unique_key, track: false)
+              end
+            end
           end
         end
       end

@@ -40,6 +40,14 @@ module Shortener
   mattr_accessor :persist_retries
   self.persist_retries = 3
 
+  # cache_urls - set to true to cache fetched urls using Rails.cache
+  mattr_accessor :cache_urls
+  self.cache_urls = false
+
+  # cache_expiration - duration after which the cache should expire
+  mattr_accessor :cache_expiration
+  self.cache_expiration = nil
+
   def self.key_chars
     CHARSETS[charset]
   end
