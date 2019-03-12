@@ -132,6 +132,21 @@ describe Shortener::ShortenedUrlsController, type: :controller do
         end
       end
 
+      context "custom charset set" do
+        before do
+          Shortener::ShortenedUrl.delete_all
+          Shortener.charset = ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a + ["-", "_"]
+        end
+
+        context 'key with valid characters' do
+          let(:key) { "cust-Key_123" }
+          let(:custom_url) { Shortener::ShortenedUrl.generate(Faker::Internet.url, custom_key: key) }
+          it 'allows if in custom charset' do
+            expect(custom_url.unique_key).to eq key
+          end      
+        end       
+      end
+
       context 'expired code' do
         let(:expired_url) { Shortener::ShortenedUrl.generate(Faker::Internet.url, expires_at: 1.hour.ago) }
         describe "GET show with expired code" do

@@ -19,8 +19,9 @@ module Shortener
   self.unique_key_length = 5
 
   # character set to chose from:
-  #  :alphanum     - a-z0-9     -  has about 60 million possible combos
-  #  :alphanumcase - a-zA-Z0-9  -  has about 900 million possible combos
+  #  :alphanum     // a-z0-9                                       ## has about 60 million possible combos
+  #  :alphanumcase // a-zA-Z0-9                                    ## has about 900 million possible combos
+  #  ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a + ["-", "_"]  ## define a custom set
   mattr_accessor :charset
   self.charset = :alphanum
 
