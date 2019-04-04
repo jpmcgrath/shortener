@@ -23,3 +23,7 @@ if ActiveRecord::Migrator.respond_to?(:migrate)
 else
   ActiveRecord::MigrationContext.new(File.expand_path("../dummy/db/migrate/", __FILE__)).migrate
 end
+
+RSpec.configure do |config|
+  config.use_transactional_fixtures = true
+end
