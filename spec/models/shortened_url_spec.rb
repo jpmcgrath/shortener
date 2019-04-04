@@ -121,6 +121,15 @@ describe Shortener::ShortenedUrl, type: :model do
         end
       end
 
+      context 'custom_key not specified' do
+        it 'generates a new one using the option `key_chars`' do
+          allow(Shortener).to receive(:key_chars) { 'Z' }
+          short_url = Shortener::ShortenedUrl.generate!(Faker::Internet.url, custom_key: nil)
+          expect(short_url).to be_persisted
+          expect(short_url.unique_key).to eq('Z' * Shortener.unique_key_length)
+        end
+      end
+
       context "duplicate unique key" do
         let(:duplicate_key) { 'ABCDEF' }
         it 'should try until it finds a non-dup key' do
