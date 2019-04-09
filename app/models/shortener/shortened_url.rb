@@ -131,8 +131,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def generate_unique_key(retries = Shortener.persist_retries)
-    self.unique_key = custom_key || self.class.unique_key_candidate
-    self.custom_key = nil
+    begin
+      self.unique_key = custom_key || self.class.unique_key_candidate
+      self.custom_key = nil
+    end while self.class.unscoped.exists?(unique_key: unique_key)
 
     yield
   rescue ActiveRecord::RecordNotUnique
