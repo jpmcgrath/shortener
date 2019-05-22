@@ -14,6 +14,8 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     belongs_to :owner, polymorphic: true
   end
 
+  attr_accessible :custom_key, :expires_at if ActiveRecord::VERSION::MAJOR < 4
+
   # exclude records in which expiration time is set and expiration time is greater than current time
   scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.current.to_s(:db)))) }
 
@@ -97,9 +99,8 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def self.merge_params_to_url(url: nil, params: {})
-    if params.respond_to?(:permit!)
-      params = params.permit!.to_h.with_indifferent_access.except!(:id, :action, :controller)
-    end
+    params.permit! if params.respond_to?(:permit!)
+    params = params.to_h.with_indifferent_access.except!(:id, :action, :controller)
 
     if Shortener.subdomain
       params.try(:except!, :subdomain) if params[:subdomain] == Shortener.subdomain

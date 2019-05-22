@@ -1,5 +1,5 @@
 class Shortener::ShortenedUrlsController < ActionController::Metal
-  include ActionController::StrongParameters
+  include ActionController::StrongParameters if ActionPack::VERSION::MAJOR >= 4
   include ActionController::Redirecting
   include ActionController::Instrumentation
   include Rails.application.routes.url_helpers
