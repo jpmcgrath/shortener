@@ -1,3 +1,5 @@
+require 'digest/md5'
+
 class Shortener::ShortenedUrl < ActiveRecord::Base
 
   REGEX_LINK_HAS_PROTOCOL = Regexp.new('\Ahttp:\/\/|\Ahttps:\/\/', Regexp::IGNORECASE)
@@ -49,12 +51,14 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
         )
       end
     else
-      scope = owner ? owner.shortened_urls : self
-      creation_method = fresh ? 'create' : 'first_or_create'
-
-      scope.where(url: clean_url(destination_url), category: category).send(
-        creation_method,
-        custom_key: custom_key,
+      scope  = owner ? owner.shortened_urls : self
+      url    = clean_url(destination_url)
+      key    = custom_key || get_unique_key(url)
+      record = scope.find_by_unique_key_and_category(key, category) if !fresh
+      record || scope.create(
+        url: url,
+        category: category,
+        custom_key: key,
         expires_at: expires_at
       )
     end
@@ -84,7 +88,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
   end
 
   def self.fetch_with_token(token: nil, additional_params: {}, track: true)
-    shortened_url = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
+    shortened_url = unexpired.where(unique_key: token).first
 
     url = if shortened_url
       shortened_url.increment_usage_count if track
@@ -115,6 +119,23 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     url
   end
 
+  def self.get_unique_key(url, random: false, length: Shortener.unique_key_length)
+    charset = Shortener.key_chars
+
+    return charset.sample(length).join if random
+
+    # Shortens a URL with a specific character set at a certain (guillotine)
+    key = ''
+    number = (Digest::MD5.hexdigest(url).to_i(16) % (charset.size**length))
+
+    while (number > 0)
+      key = "#{key}#{charset[number % charset.size]}"
+      number /= charset.size
+    end
+
+    key
+  end
+
   def increment_usage_count
     self.class.increment_counter(:use_count, id)
   end
@@ -125,15 +146,11 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   private
 
-  def self.unique_key_candidate
-    charset = ::Shortener.key_chars
-    (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join
-  end
-
-  def generate_unique_key(retries = Shortener.persist_retries)
+  def generate_unique_key(retries = Shortener.persist_retries, random = false)
     begin
-      self.unique_key = custom_key || self.class.unique_key_candidate
+      self.unique_key = custom_key || self.class.get_unique_key(url, random: random)
       self.custom_key = nil
+      random = true
     end while self.class.unscoped.exists?(unique_key: unique_key)
 
     yield
