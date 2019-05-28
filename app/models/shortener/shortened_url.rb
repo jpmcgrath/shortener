@@ -14,7 +14,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     belongs_to :owner, polymorphic: true
   end
 
-  attr_accessible :custom_key, :expires_at if ActiveRecord::VERSION::MAJOR < 4
+  attr_accessible :custom_key, :expires_at, :url, :category, :unique_key if ActiveRecord::VERSION::MAJOR < 4
 
   # exclude records in which expiration time is set and expiration time is greater than current time
   scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.current.to_s(:db)))) }
