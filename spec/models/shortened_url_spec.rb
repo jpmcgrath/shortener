@@ -167,6 +167,19 @@ describe Shortener::ShortenedUrl, type: :model do
           expect(short_url.unique_key).not_to eq duplicate_key
         end
       end
+
+      context 'same url is not existed' do
+        it 'returns the same key' do
+          existing_shortened_url.destroy
+
+          new_url = Shortener::ShortenedUrl.generate!(existing_shortened_url.url)
+          expect(new_url.unique_key).to eq existing_shortened_url.unique_key
+
+          new_url.destroy
+          new_url = Shortener::ShortenedUrl.generate!(url, fresh: true)
+          expect(new_url.unique_key).to eq existing_shortened_url.unique_key
+        end
+      end
     end
 
     context "existing shortened URL with relative path" do
@@ -335,22 +348,22 @@ describe Shortener::ShortenedUrl, type: :model do
   describe '#get_unique_key' do
     let(:url) { Faker::Internet.url }
 
-    it 'should get certain value with same urls' do
+    it 'returns certain value with same urls' do
       key = Shortener::ShortenedUrl.get_unique_key(url)
       expect(Shortener::ShortenedUrl.get_unique_key(url)).to eq key
     end
 
-    it 'should get different value with different urls' do
+    it 'returns different value with different urls' do
       key = Shortener::ShortenedUrl.get_unique_key(url)
       expect(url).not_to eq key
     end
 
-    it 'should get different value with same urls by random' do
+    it 'returns different value with same urls by random' do
       key = Shortener::ShortenedUrl.get_unique_key(url)
       expect(Shortener::ShortenedUrl.get_unique_key(url, random: true)).not_to eq key
     end
 
-    it 'should get certain length' do
+    it 'returns certain length' do
       expect(Shortener::ShortenedUrl.get_unique_key(url, length: 4).size).to eq 4
     end
   end
