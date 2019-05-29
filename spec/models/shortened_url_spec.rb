@@ -96,6 +96,18 @@ describe Shortener::ShortenedUrl, type: :model do
                 expect(new_url.category).to eq 'test'
               end
             end
+
+            context 'original url without category' do
+              let!(:existing_shortened_url) { Shortener::ShortenedUrl.generate!(url) }
+              it 'returns the same shortened link record' do
+                new_url = Shortener::ShortenedUrl.generate!(url, category: 'test')
+                expect(new_url).not_to eq existing_shortened_url
+                expect(new_url.category).to eq 'test'
+
+                lastest_url = Shortener::ShortenedUrl.generate!(url, category: 'test')
+                expect(lastest_url).to eq new_url
+              end
+            end
           end
         end
 
