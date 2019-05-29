@@ -345,26 +345,26 @@ describe Shortener::ShortenedUrl, type: :model do
     end
   end
 
-  describe '#get_unique_key' do
+  describe '#unique_key_candidate' do
     let(:url) { Faker::Internet.url }
 
     it 'returns certain value with same urls' do
-      key = Shortener::ShortenedUrl.get_unique_key(url)
-      expect(Shortener::ShortenedUrl.get_unique_key(url)).to eq key
+      key = Shortener::ShortenedUrl.unique_key_candidate(url: url)
+      expect(Shortener::ShortenedUrl.unique_key_candidate(url: url)).to eq key
     end
 
     it 'returns different value with different urls' do
-      key = Shortener::ShortenedUrl.get_unique_key(url)
+      key = Shortener::ShortenedUrl.unique_key_candidate(url: url)
       expect(url).not_to eq key
     end
 
     it 'returns different value with same urls by random' do
-      key = Shortener::ShortenedUrl.get_unique_key(url)
-      expect(Shortener::ShortenedUrl.get_unique_key(url, random: true)).not_to eq key
+      key = Shortener::ShortenedUrl.unique_key_candidate(url: url)
+      expect(Shortener::ShortenedUrl.unique_key_candidate(url: url, random: true)).not_to eq key
     end
 
     it 'returns certain length' do
-      expect(Shortener::ShortenedUrl.get_unique_key(url, length: 4).size).to eq 4
+      expect(Shortener::ShortenedUrl.unique_key_candidate(url: url, length: 4).size).to eq 4
     end
   end
 end

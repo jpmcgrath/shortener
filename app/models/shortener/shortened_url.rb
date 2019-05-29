@@ -53,7 +53,7 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     else
       scope  = owner ? owner.shortened_urls : self
       url    = clean_url(destination_url)
-      key    = custom_key || get_unique_key(url)
+      key    = custom_key || unique_key_candidate(url: url)
       record = scope.find_by_unique_key_and_category(key, category) if !fresh
       record || scope.create(
         url: url,
@@ -119,10 +119,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
     url
   end
 
-  def self.get_unique_key(url, random: false, length: Shortener.unique_key_length)
+  def self.unique_key_candidate(url: nil, random: false, length: Shortener.unique_key_length)
     charset = Shortener.key_chars
 
-    return charset.sample(length).join if random
+    return charset.sample(length).join if random || url.nil?
 
     # Shortens a URL with a specific character set at a certain (guillotine)
     key = ''
@@ -146,9 +146,10 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
 
   private
 
-  def generate_unique_key(retries = Shortener.persist_retries, random = false)
+  def generate_unique_key(retries = Shortener.persist_retries)
+    random = false
     begin
-      self.unique_key = custom_key || self.class.get_unique_key(url, random: random)
+      self.unique_key = custom_key || self.class.unique_key_candidate(url: url, random: random)
       self.custom_key = nil
       random = true
     end while self.class.unscoped.exists?(unique_key: unique_key)
