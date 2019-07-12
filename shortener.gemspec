@@ -12,7 +12,6 @@ Gem::Specification.new do |s|
   s.authors                   = [ "James P. McGrath", "Michael Reinsch" ]
   s.email                     = [ "gems@jamespmcgrath.com", "michael@mobalean.com" ]
   s.homepage                  = "http://jamespmcgrath.com/projects/shortener"
-  s.rubyforge_project         = "shortener"
   s.required_rubygems_version = "> 2.1.0"
 
   s.add_dependency "voight_kampff", '~> 1.1.2'
