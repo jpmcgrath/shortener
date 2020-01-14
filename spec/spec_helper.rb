@@ -7,6 +7,7 @@ require 'rspec/rails'
 require 'shoulda/matchers'
 require 'byebug'
 require 'faker'
+require 'capybara/rspec'
 
 Rails.backtrace_cleaner.remove_silencers!
 
