@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe Shortener::ShortenedUrl, type: :model do
-  it { is_expected.to belong_to :owner }
+  it { is_expected.to belong_to(:owner).optional }
   it { is_expected.to validate_presence_of :url }
 
   describe '#generate!' do
