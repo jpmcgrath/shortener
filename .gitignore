@@ -13,3 +13,5 @@ bin/*
 Gemfile.lock
 .rvmrc
 .redcar/*
+gemfiles/*.lock
+spec/dummy/tmp
