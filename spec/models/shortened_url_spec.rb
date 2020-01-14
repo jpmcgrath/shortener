@@ -157,7 +157,7 @@ describe Shortener::ShortenedUrl, type: :model do
           Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
 
           query = double
-          query.stub(:exists?).and_return(false)
+          allow(query).to receive(:exists?).and_return(false)
           allow(Shortener::ShortenedUrl).to receive(:unscoped).and_return(query).once
           allow(Shortener::ShortenedUrl).to receive(:unscoped).and_call_original
 
