@@ -106,10 +106,6 @@ If you want to use a custom charset, you can create your own combination by crea
 
   Shortener.charset = ("a".."z").to_a + (0..9).to_a + ["-", "_"]
 
-If you want to use a custom charset, you can create your own combination by creating an array of possible values, such as allowing underscore and dashes:
-
-  Shortener.charset = ("a".."z").to_a + (0..9).to_a + ["-", "_"]
-
 == Usage
 
 To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:
