@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe Shortener::ShortenedUrl, type: :model do
-  it { is_expected.to belong_to :owner }
+  it { is_expected.to belong_to(:owner).optional }
   it { is_expected.to validate_presence_of :url }
 
   describe '#generate!' do
@@ -157,7 +157,7 @@ describe Shortener::ShortenedUrl, type: :model do
           Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
 
           query = double
-          query.stub(:exists?).and_return(false)
+          allow(query).to receive(:exists?).and_return(false)
           allow(Shortener::ShortenedUrl).to receive(:unscoped).and_return(query).once
           allow(Shortener::ShortenedUrl).to receive(:unscoped).and_call_original
 
