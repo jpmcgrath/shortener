@@ -138,13 +138,17 @@ describe Shortener::ShortenedUrlsController, type: :controller do
           Shortener.charset = ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a + ["-", "_"]
         end
 
+        after do
+          Shortener.charset = :alphanum
+        end
+
         context 'key with valid characters' do
           let(:key) { "cust-Key_123" }
           let(:custom_url) { Shortener::ShortenedUrl.generate(Faker::Internet.url, custom_key: key) }
           it 'allows if in custom charset' do
             expect(custom_url.unique_key).to eq key
-          end      
-        end       
+          end
+        end
       end
 
       context 'expired code' do
