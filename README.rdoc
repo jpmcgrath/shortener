@@ -63,12 +63,6 @@ migration:
 * The link records a count of how many times it has been “un-shortened”;
 * The link can be associated with a user, this allows for stats of the link usage for a particular user and other interesting things;
 
-=== Future improvements:
-
-* There has not been an attempt to remove ambiguous characters (i.e. 1 l and capital i, or 0 and O etc.) from the unique key generated for the link. This means people might copy the link incorrectly if copying the link by hand;
-* The system could pre-generate unique keys in advance, avoiding the database penalty when checking that a newly generated key is unique;
-* The system could store/cache the shortened URL if the url is to be continually rendered;
-
 == Installation
 
 Shortener is compatible with Rails v3, v4, v5, & v6. To install, add to your Gemfile:
