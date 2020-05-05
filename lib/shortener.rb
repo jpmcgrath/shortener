@@ -41,6 +41,10 @@ module Shortener
   mattr_accessor :persist_retries
   self.persist_retries = 3
 
+  # auto_clean_url - controls url cleaning mechanism, set it to false to disable
+  mattr_accessor :auto_clean_url
+  self.auto_clean_url = true
+
   def self.key_chars
     charset.is_a?(Symbol) ? CHARSETS[charset] : charset
   end

@@ -1,4 +1,4 @@
-{<img src="https://secure.travis-ci.org/jpmcgrath/shortener.svg?branch=master" alt="Build Status" />}[http://travis-ci.org/jpmcgrath/shortener]  
+{<img src="https://secure.travis-ci.org/jpmcgrath/shortener.svg?branch=master" alt="Build Status" />}[http://travis-ci.org/jpmcgrath/shortener]
 {<img src="https://codeclimate.com/github/jpmcgrath/shortener/badges/gpa.svg" />}[https://codeclimate.com/github/jpmcgrath/shortener]
 {<img src="https://badge.fury.io/rb/shortener.svg" alt="Gem version" />}[http://badge.fury.io/rb/shortener]
 
@@ -96,10 +96,15 @@ By default, Shortener will generate unique keys using numbers and lowercase a-z.
 the upper and lower case charset, by including the following:
 
   Shortener.charset = :alphanumcase
-  
+
 If you want to use a custom charset, you can create your own combination by creating an array of possible values, such as allowing underscore and dashes:
 
   Shortener.charset = ("a".."z").to_a + (0..9).to_a + ["-", "_"]
+
+By default, <b>Shortener assumes URLs to be valid web URLs</b> and normalizes them in an effort to make sure there are no duplicate records generated for effectively same URLs with differences of only non-effective slash etc.
+You can control this option if it interferes for any of your logic. One common case is for mobile app links or universal links where normalization can corrupt the URLs of form <tt>appname://some_route</tt>
+
+  Shortener.auto_clean_url = true
 
 == Usage
 
@@ -141,7 +146,7 @@ And to access those URLs:
 
 === Shortened URLs with custom unique key
 
-You can pass in your own key when generating a shortened URL. This should be unique.  
+You can pass in your own key when generating a shortened URL. This should be unique.
 
 *Important:* Custom keys can't contain characters other than those defined in *Shortener.charset*. Default is numbers and lowercase a-z (See *Configuration*).
 
