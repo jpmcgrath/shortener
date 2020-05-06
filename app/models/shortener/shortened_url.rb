@@ -52,7 +52,8 @@ class Shortener::ShortenedUrl < ActiveRecord::Base
       scope = owner ? owner.shortened_urls : self
       creation_method = fresh ? 'create' : 'first_or_create'
 
-      scope.where(url: clean_url(destination_url), category: category).send(
+      url_to_save = Shortener.auto_clean_url ? clean_url(destination_url) : destination_url
+      scope.where(url: url_to_save, category: category).send(
         creation_method,
         custom_key: custom_key,
         expires_at: expires_at

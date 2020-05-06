@@ -177,8 +177,26 @@ describe Shortener::ShortenedUrl, type: :model do
         it 'finds the shortened url from slashless oath' do
           expect(Shortener::ShortenedUrl.generate!(path)).to eq existing_shortened_url
         end
-        it "should look up exsiting URL" do
-          expect(Shortener::ShortenedUrl.generate!("/#{path}")).to eq existing_shortened_url
+
+        context 'with auto_clean_url enabled by default' do
+          it "looks up existing cleaned URL" do
+            expect(Shortener::ShortenedUrl.generate!("/#{path}")).to eq existing_shortened_url
+          end
+        end
+
+        context 'with auto_clean_url disabled' do
+          around do |spec|
+            tries = Shortener.auto_clean_url
+            Shortener.auto_clean_url = false
+            spec.run
+            Shortener.auto_clean_url = tries
+          end
+
+          it "does not look up existing cleaned URL" do
+            shortened_url = Shortener::ShortenedUrl.generate!("/#{path}")
+            expect(shortened_url).not_to eq existing_shortened_url
+            expect(shortened_url.url).to eq "/#{path}"
+          end
         end
       end
     end
