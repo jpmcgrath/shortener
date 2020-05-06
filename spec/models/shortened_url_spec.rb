@@ -179,7 +179,7 @@ describe Shortener::ShortenedUrl, type: :model do
         end
 
         context 'with auto_clean_url enabled by default' do
-          it "should look up existing cleaned URL" do
+          it "looks up existing cleaned URL" do
             expect(Shortener::ShortenedUrl.generate!("/#{path}")).to eq existing_shortened_url
           end
         end
@@ -192,7 +192,7 @@ describe Shortener::ShortenedUrl, type: :model do
             Shortener.auto_clean_url = tries
           end
 
-          it "should not look up existing cleaned URL" do
+          it "does not look up existing cleaned URL" do
             shortened_url = Shortener::ShortenedUrl.generate!("/#{path}")
             expect(shortened_url).not_to eq existing_shortened_url
             expect(shortened_url.url).to eq "/#{path}"
