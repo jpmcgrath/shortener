@@ -1,4 +1,4 @@
-class Shortener::ShortenedUrl < ActiveRecord::Base
+class Shortener::ShortenedUrl < ApplicationRecord
 
   REGEX_LINK_HAS_PROTOCOL = Regexp.new('\Ahttp:\/\/|\Ahttps:\/\/', Regexp::IGNORECASE)
 
