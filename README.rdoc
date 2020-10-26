@@ -65,7 +65,7 @@ migration:
 
 == Installation
 
-Shortener is compatible with Rails v3, v4, v5, & v6. To install, add to your Gemfile:
+Shortener is compatible with Rails v4, v5, & v6. To install, add to your Gemfile:
 
   gem 'shortener'
 
