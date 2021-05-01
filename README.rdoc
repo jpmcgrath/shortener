@@ -256,6 +256,18 @@ If you want more things to happen when a user accesses one of your short urls, y
 
   *note:* If no shortened URL is found, the url will be `default_redirect` or `/`
 
+=== Configuring a different database for shortened_urls table
+
+You can store a `shortened_urls` table in another database and connecting to it by creating a initializer with the following:
+
+```ruby
+ActiveSupport.on_load(:shortener_record) do
+  connects_to(database: { writing: :dbname, reading: :dbname_replica })
+end
+```
+
+**Note:** Please, replace `dbname` and `dbname_replica` to match your database configuration.
+
 == Origins
 
 For a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.com/a-simple-link-shortener-in-rails/].
