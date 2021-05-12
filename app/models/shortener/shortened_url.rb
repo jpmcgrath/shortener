@@ -15,7 +15,7 @@ class Shortener::ShortenedUrl < Shortener::Record
   end
 
   # exclude records in which expiration time is set and expiration time is greater than current time
-  scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.current.to_s(:db)))) }
+  scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.now))) }
 
   attr_accessor :custom_key
 
@@ -41,11 +41,11 @@ class Shortener::ShortenedUrl < Shortener::Record
       else
         generate!(
           destination_url.url,
-          owner:      owner,
+          owner: owner,
           custom_key: custom_key,
           expires_at: expires_at,
-          fresh:      fresh,
-          category:   category
+          fresh: fresh,
+          category: category
         )
       end
     else
@@ -88,11 +88,11 @@ class Shortener::ShortenedUrl < Shortener::Record
     shortened_url = ::Shortener::ShortenedUrl.unexpired.where(unique_key: token).first
 
     url = if shortened_url
-      shortened_url.increment_usage_count if track
-      merge_params_to_url(url: shortened_url.url, params: additional_params)
-    else
-      Shortener.default_redirect || '/'
-    end
+            shortened_url.increment_usage_count if track
+            merge_params_to_url(url: shortened_url.url, params: additional_params)
+          else
+            Shortener.default_redirect || '/'
+          end
 
     { url: url, shortened_url: shortened_url }
   end
@@ -109,7 +109,7 @@ class Shortener::ShortenedUrl < Shortener::Record
     if params.present?
       uri = URI.parse(url)
       existing_params = Rack::Utils.parse_nested_query(uri.query)
-      uri.query       = existing_params.with_indifferent_access.merge(params).to_query
+      uri.query = existing_params.with_indifferent_access.merge(params).to_query
       url = uri.to_s
     end
 
@@ -128,7 +128,7 @@ class Shortener::ShortenedUrl < Shortener::Record
 
   def self.unique_key_candidate
     charset = ::Shortener.key_chars
-    (0...::Shortener.unique_key_length).map{ charset[rand(charset.size)] }.join
+    (0...::Shortener.unique_key_length).map { charset[rand(charset.size)] }.join
   end
 
   def generate_unique_key(retries = Shortener.persist_retries)
