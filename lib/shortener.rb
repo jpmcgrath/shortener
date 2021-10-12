@@ -19,8 +19,9 @@ module Shortener
   self.unique_key_length = 5
 
   # character set to chose from:
-  #  :alphanum     - a-z0-9     -  has about 60 million possible combos
-  #  :alphanumcase - a-zA-Z0-9  -  has about 900 million possible combos
+  #  :alphanum     // a-z0-9                                       ## has about 60 million possible combos
+  #  :alphanumcase // a-zA-Z0-9                                    ## has about 900 million possible combos
+  #  ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a + ["-", "_"]  ## define a custom set
   mattr_accessor :charset
   self.charset = :alphanum
 
@@ -40,6 +41,10 @@ module Shortener
   mattr_accessor :persist_retries
   self.persist_retries = 3
 
+  # auto_clean_url - controls url cleaning mechanism, set it to false to disable
+  mattr_accessor :auto_clean_url
+  self.auto_clean_url = true
+
   # cache_urls - set to true to cache fetched urls using Rails.cache
   mattr_accessor :cache_urls
   self.cache_urls = false
@@ -49,7 +54,7 @@ module Shortener
   self.cache_expiration = nil
 
   def self.key_chars
-    CHARSETS[charset]
+    charset.is_a?(Symbol) ? CHARSETS[charset] : charset
   end
 end
 

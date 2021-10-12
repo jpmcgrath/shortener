@@ -2,12 +2,7 @@
 require 'spec_helper'
 
 describe Shortener::ShortenedUrl, type: :model do
-  if ActiveRecord::VERSION::MAJOR >= 5
-    it { is_expected.to belong_to(:owner).optional }
-  else
-    it { is_expected.to belong_to :owner }
-  end
-
+  it { is_expected.to belong_to(:owner).optional }
   it { is_expected.to validate_presence_of :url }
 
   describe '#generate!' do
@@ -128,31 +123,48 @@ describe Shortener::ShortenedUrl, type: :model do
 
       context "duplicate unique key" do
         let(:duplicate_key) { 'ABCDEF' }
-        it 'should try until it finds a non-dup key' do
+        context 'without retry' do
+          around do |spec|
+            tries = Shortener.persist_retries
+            Shortener.persist_retries = 0
+            spec.run
+            Shortener.persist_retries = tries
+          end
+
+          it 'finds a non-dup key' do
+            Shortener::ShortenedUrl.where(unique_key: duplicate_key).delete_all
+            Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
+            short_url = Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
+            expect(short_url).not_to be_nil
+            expect(short_url.unique_key).not_to be_nil
+            expect(short_url.unique_key).not_to eq duplicate_key
+          end
+
+          it 'unscoped query to finds a non-dup key' do
+            Shortener::ShortenedUrl.where(unique_key: duplicate_key).delete_all
+            Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
+            short_url = Shortener::ShortenedUrl.where(
+              url: Faker::Internet.url, category: :test
+            ).create!(url: Faker::Internet.url, custom_key: duplicate_key)
+            expect(short_url).not_to be_nil
+            expect(short_url.unique_key).not_to be_nil
+            expect(short_url.unique_key).not_to eq duplicate_key
+          end
+        end
+
+        it 'use retry in case with DB unique constraint exception' do
           Shortener::ShortenedUrl.where(unique_key: duplicate_key).delete_all
           Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
+
+          query = double
+          allow(query).to receive(:exists?).and_return(false)
+          allow(Shortener::ShortenedUrl).to receive(:unscoped).and_return(query).once
+          allow(Shortener::ShortenedUrl).to receive(:unscoped).and_call_original
+
           short_url = Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
           expect(short_url).not_to be_nil
           expect(short_url.unique_key).not_to be_nil
           expect(short_url.unique_key).not_to eq duplicate_key
-        end
-
-        context 'the persist_retries is set to 1' do
-          around do |example|
-            tries = Shortener.persist_retries
-
-            Shortener.persist_retries = 0
-            example.run
-            Shortener.persist_retries = tries
-          end
-
-          it 'raises the non unique error' do
-            Shortener::ShortenedUrl.where(unique_key: duplicate_key).delete_all
-            Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
-            expect {
-              Shortener::ShortenedUrl.create!(url: Faker::Internet.url, custom_key: duplicate_key)
-            }.to raise_error(ActiveRecord::RecordNotUnique)
-          end
         end
       end
     end
@@ -165,8 +177,26 @@ describe Shortener::ShortenedUrl, type: :model do
         it 'finds the shortened url from slashless oath' do
           expect(Shortener::ShortenedUrl.generate!(path)).to eq existing_shortened_url
         end
-        it "should look up exsiting URL" do
-          expect(Shortener::ShortenedUrl.generate!("/#{path}")).to eq existing_shortened_url
+
+        context 'with auto_clean_url enabled by default' do
+          it "looks up existing cleaned URL" do
+            expect(Shortener::ShortenedUrl.generate!("/#{path}")).to eq existing_shortened_url
+          end
+        end
+
+        context 'with auto_clean_url disabled' do
+          around do |spec|
+            tries = Shortener.auto_clean_url
+            Shortener.auto_clean_url = false
+            spec.run
+            Shortener.auto_clean_url = tries
+          end
+
+          it "does not look up existing cleaned URL" do
+            shortened_url = Shortener::ShortenedUrl.generate!("/#{path}")
+            expect(shortened_url).not_to eq existing_shortened_url
+            expect(shortened_url.url).to eq "/#{path}"
+          end
         end
       end
     end

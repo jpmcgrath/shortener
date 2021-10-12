@@ -1,4 +1,6 @@
-{<img src="https://secure.travis-ci.org/jpmcgrath/shortener.png?branch=master" alt="Build Status" />}[http://travis-ci.org/jpmcgrath/shortener]  {<img src="https://codeclimate.com/github/jpmcgrath/shortener/badges/gpa.svg" />}[https://codeclimate.com/github/jpmcgrath/shortener]
+{<img src="https://secure.travis-ci.org/jpmcgrath/shortener.svg?branch=master" alt="Build Status" />}[http://travis-ci.org/jpmcgrath/shortener]
+{<img src="https://codeclimate.com/github/jpmcgrath/shortener/badges/gpa.svg" />}[https://codeclimate.com/github/jpmcgrath/shortener]
+{<img src="https://badge.fury.io/rb/shortener.svg" alt="Gem version" />}[http://badge.fury.io/rb/shortener]
 
 = Shortener
 
@@ -14,7 +16,7 @@ The majority of the Shortener consists of three parts:
 
 === Dependencies
 
-Shortener is designed to work from within a Rails 3 and Rails 4 applications. It has dependancies Rails core components like ActiveRecord, ActionController, the rails routing engine and more.
+Shortener is designed to work from within a Ruby on Rail  applications. It has dependancies Rails core components like ActiveRecord, ActionController, the rails routing engine and more.
 
 === Ruby Version Support
 
@@ -61,15 +63,9 @@ migration:
 * The link records a count of how many times it has been “un-shortened”;
 * The link can be associated with a user, this allows for stats of the link usage for a particular user and other interesting things;
 
-=== Future improvements:
-
-* There has not been an attempt to remove ambiguous characters (i.e. 1 l and capital i, or 0 and O etc.) from the unique key generated for the link. This means people might copy the link incorrectly if copying the link by hand;
-* The system could pre-generate unique keys in advance, avoiding the database penalty when checking that a newly generated key is unique;
-* The system could store/cache the shortened URL if the url is to be continually rendered;
-
 == Installation
 
-Shortener is compatible with Rails v3, v4 & v5. To install, add to your Gemfile:
+Shortener is compatible with Rails v4, v5, & v6. To install, add to your Gemfile:
 
   gem 'shortener'
 
@@ -100,6 +96,15 @@ By default, Shortener will generate unique keys using numbers and lowercase a-z.
 the upper and lower case charset, by including the following:
 
   Shortener.charset = :alphanumcase
+
+If you want to use a custom charset, you can create your own combination by creating an array of possible values, such as allowing underscore and dashes:
+
+  Shortener.charset = ("a".."z").to_a + (0..9).to_a + ["-", "_"]
+
+By default, <b>Shortener assumes URLs to be valid web URLs</b> and normalizes them in an effort to make sure there are no duplicate records generated for effectively same URLs with differences of only non-effective slash etc.
+You can control this option if it interferes for any of your logic. One common case is for mobile app links or universal links where normalization can corrupt the URLs of form <tt>appname://some_route</tt>
+
+  Shortener.auto_clean_url = true
 
 == Usage
 
@@ -143,7 +148,9 @@ And to access those URLs:
 
 You can pass in your own key when generating a shortened URL. This should be unique.
 
-  Shortener::ShortenedUrl.generate("example.com", owner: user, custom_key: "my-key")
+*Important:* Custom keys can't contain characters other than those defined in *Shortener.charset*. Default is numbers and lowercase a-z (See *Configuration*).
+
+  Shortener::ShortenedUrl.generate("example.com", owner: user, custom_key: "mykey")
 
   short_url("http://example.com", custom_key: 'yourkey')
 
@@ -170,7 +177,7 @@ to create a fresh record, you can pass the following argument:
 === Forbidden keys
 
 You can ensure that records with forbidden keys will not be generated.
-In rails you can put next line into config/initializers/shortener.rb
+In Rails you can put next line into config/initializers/shortener.rb
 
   Shortener.forbidden_keys.concat %w(terms promo)
 
@@ -248,6 +255,18 @@ If you want more things to happen when a user accesses one of your short urls, y
   4. returns a hash of the format `{url: <the original url>, shortened_url: <the retrieved ShortenedURL>}
 
   *note:* If no shortened URL is found, the url will be `default_redirect` or `/`
+
+=== Configuring a different database for shortened_urls table
+
+You can store a `shortened_urls` table in another database and connecting to it by creating a initializer with the following:
+
+```ruby
+ActiveSupport.on_load(:shortener_record) do
+  connects_to(database: { writing: :dbname, reading: :dbname_replica })
+end
+```
+
+**Note:** Please, replace `dbname` and `dbname_replica` to match your database configuration.
 
 == Origins
 
