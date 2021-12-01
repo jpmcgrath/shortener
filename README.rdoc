@@ -1,4 +1,4 @@
-{<img src="https://secure.travis-ci.org/jpmcgrath/shortener.svg?branch=master" alt="Build Status" />}[http://travis-ci.org/jpmcgrath/shortener]
+{<img src="https://github.com/jpmcgrath/shortener/actions/workflows/ruby.yml/badge.svg" alt="Build Status" />}[https://github.com/jpmcgrath/shortener/actions]
 {<img src="https://codeclimate.com/github/jpmcgrath/shortener/badges/gpa.svg" />}[https://codeclimate.com/github/jpmcgrath/shortener]
 {<img src="https://badge.fury.io/rb/shortener.svg" alt="Gem version" />}[http://badge.fury.io/rb/shortener]
 
