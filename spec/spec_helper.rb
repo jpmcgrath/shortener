@@ -10,6 +10,7 @@ require 'faker'
 require 'capybara/rspec'
 
 Rails.backtrace_cleaner.remove_silencers!
+ActiveRecord::Base.logger = Logger.new(STDOUT) if ENV['LOG_STDOUT']
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
