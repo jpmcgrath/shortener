@@ -15,7 +15,7 @@ class Shortener::ShortenedUrl < Shortener::Record
   end
 
   # exclude records in which expiration time is set and expiration time is greater than current time
-  scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.current.to_s(:db)))) }
+  scope :unexpired, -> { where(arel_table[:expires_at].eq(nil).or(arel_table[:expires_at].gt(::Time.current))) }
 
   attr_accessor :custom_key
 
