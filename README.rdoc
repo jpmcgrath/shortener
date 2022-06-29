@@ -161,7 +161,7 @@ Probably, most of the time it would be used with owner:
 
   Shortener::ShortenedUrl.generate("example.com/page", user: user, expires_at: 24.hours.since)
 
-You can omit owner passing nil instead:
+You can omit owner:
 
   Shortener::ShortenedUrl.generate("example.com/page", expires_at: 24.hours.since)
 
