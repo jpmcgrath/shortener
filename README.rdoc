@@ -163,7 +163,7 @@ Probably, most of the time it would be used with owner:
 
 You can omit owner passing nil instead:
 
-  Shortener::ShortenedUrl.generate("example.com/page", user: nil, expires_at: 24.hours.since)
+  Shortener::ShortenedUrl.generate("example.com/page", expires_at: 24.hours.since)
 
 === Fresh Links
 
