@@ -159,11 +159,11 @@ You can pass in your own key when generating a shortened URL. This should be uni
 You can create expirable URLs.
 Probably, most of the time it would be used with owner:
 
-  Shortener::ShortenedUrl.generate("example.com/page", user, expires_at: 24.hours.since)
+  Shortener::ShortenedUrl.generate("example.com/page", user: user, expires_at: 24.hours.since)
 
 You can omit owner passing nil instead:
 
-  Shortener::ShortenedUrl.generate("example.com/page", nil, expires_at: 24.hours.since)
+  Shortener::ShortenedUrl.generate("example.com/page", user: nil, expires_at: 24.hours.since)
 
 === Fresh Links
 
