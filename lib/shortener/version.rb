@@ -1,3 +1,3 @@
 module Shortener
-  VERSION = '0.8.2'.freeze
+  VERSION = '1.0.0'.freeze
 end
