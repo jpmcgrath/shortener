@@ -268,26 +268,13 @@ end
 
 **Note:** Please, replace `dbname` and `dbname_replica` to match your database configuration.
 
-== Origins
-
-For a bit of backstory to Shortener see this {blog post}[http://jamespmcgrath.com/a-simple-link-shortener-in-rails/].
-
-== In The Wild
-
-Shortener is used in a number of production systems, including, but not limited to:
-
-- {Doorkeeper - An Event Management Tool}[http://www.doorkeeperhq.com/]
-- {1001tweets - Repost your tweets to get more clicks}[http://www.1001tweets.com/]
-- {NewsMaker.io - The curated newsletter builder}[https://www.newsmaker.io/]
-
-If you are using Shortener in your project and would like to be added to this list, please get in touch!
-
 == Contributing
 
 We welcome new contributors. Because we're all busy people, and because Shortener
 is used/relied upon by many projects, it is essential that new Pull Requests
 are opened with good spec coverage, and a passing build on supported ruby versions
-and Rails versions.
+and Rails versions. Please create a single PR per feature/contribution, with as
+few changes per PR as possible to make it easier to review.
 
 To contribute:
 
