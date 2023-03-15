@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.homepage                  = "http://jamespmcgrath.com/projects/shortener"
   s.required_rubygems_version = "> 2.1.0"
 
-  s.add_dependency "voight_kampff", '~> 1.1.2'
+  s.add_dependency "voight_kampff", '~> 2.0'
 
   s.add_development_dependency "rails", '>= 3'
   s.add_development_dependency "sqlite3"
