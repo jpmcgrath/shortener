@@ -1,18 +1,7 @@
-appraise "rails_4" do
+appraise "rails_4.2" do
   gem "rails", "~> 4.2.10"
   gem "rspec-rails", "~> 3.0"
   gem "sqlite3", "~> 1.3.6"
-end
-
-appraise "rails_5.0" do
-  gem "rails", "~> 5.0.7"
-  gem "rspec-rails", "~> 4.0"
-  gem "sqlite3", "~> 1.3.6"
-end
-
-appraise "rails_5.1" do
-  gem "rails", "~> 5.1.6"
-  gem "rspec-rails", "~> 4.0"
 end
 
 appraise "rails_5.2" do
@@ -28,5 +17,5 @@ appraise "rails_6.1" do
 end
 
 appraise "rails_7.0" do
-  gem "rails", "~> 7.0.0.rc1"
+  gem "rails", "~> 7.0.0"
 end

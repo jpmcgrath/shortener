@@ -14,41 +14,39 @@ jobs:
       matrix:
         ruby-version: 
           - '2.4'
-          - '2.6'
           - '2.7'
           - '3.0'
+          - '3.2'
         gemfile:
-          - rails_4.gemfile
-          - rails_5.0.gemfile
-          - rails_5.1.gemfile
+          - rails_4.2.gemfile
           - rails_5.2.gemfile
           - rails_6.0.gemfile
           - rails_6.1.gemfile
           - rails_7.0.gemfile
         include:
           - ruby-version: '2.4'
-            gemfile: rails_4.gemfile
+            gemfile: rails_4.2.gemfile
             bundler-version: 1
         exclude:
-        - ruby-version: '2.6'
-          gemfile: rails_4.gemfile
         - ruby-version: '2.7'
-          gemfile: rails_4.gemfile
+          gemfile: rails_4.2.gemfile
         - ruby-version: '3.0'
-          gemfile: rails_4.gemfile
+          gemfile: rails_4.2.gemfile
+        - ruby-version: '3.2'
+          gemfile: rails_4.2.gemfile
         - ruby-version: '3.0'
-          gemfile: rails_5.0.gemfile
-        - ruby-version: '3.0'
-          gemfile: rails_5.1.gemfile
-        - ruby-version: '3.0'
+          gemfile: rails_5.2.gemfile
+        - ruby-version: '3.2'
           gemfile: rails_5.2.gemfile
         - ruby-version: '2.4'
           gemfile: rails_6.0.gemfile
+        - ruby-version: '3.2'
+          gemfile: rails_6.0.gemfile
         - ruby-version: '2.4'
           gemfile: rails_6.1.gemfile
+        - ruby-version: '3.2'
+          gemfile: rails_6.1.gemfile
         - ruby-version: '2.4'
-          gemfile: rails_7.0.gemfile
-        - ruby-version: '2.6'
           gemfile: rails_7.0.gemfile
 
     env:
