@@ -11,6 +11,7 @@ bin/*
 *.gem
 *.swp
 Gemfile.lock
+.ruby-version
 .rvmrc
 .redcar/*
 gemfiles/*.lock
