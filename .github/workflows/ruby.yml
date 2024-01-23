@@ -23,6 +23,7 @@ jobs:
           - rails_6.0.gemfile
           - rails_6.1.gemfile
           - rails_7.0.gemfile
+          - rails_7.1.gemfile
         include:
           - ruby-version: '2.4'
             gemfile: rails_4.2.gemfile
@@ -48,6 +49,10 @@ jobs:
           gemfile: rails_6.1.gemfile
         - ruby-version: '2.4'
           gemfile: rails_7.0.gemfile
+        - ruby-version: '2.4'
+          gemfile: rails_7.1.gemfile
+        - ruby-version: '2.7'
+          gemfile: rails_7.1.gemfile
 
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}
