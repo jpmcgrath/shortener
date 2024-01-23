@@ -2,10 +2,12 @@ appraise "rails_4.2" do
   gem "rails", "~> 4.2.10"
   gem "rspec-rails", "~> 3.0"
   gem "sqlite3", "~> 1.3.6"
+  gem "loofah", "~> 2.20.0"
 end
 
 appraise "rails_5.2" do
   gem "rails", "~> 5.2.0"
+  gem "loofah", "~> 2.20.0"
 end
 
 appraise "rails_6.0" do
