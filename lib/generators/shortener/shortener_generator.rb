@@ -9,7 +9,7 @@ class ShortenerGenerator < Rails::Generators::Base
   end
 
   def self.next_migration_number(dirname)
-    if ActiveRecord::Base.timestamped_migrations
+    if ActiveRecord.respond_to?(:timestamped_migrations) ? ActiveRecord.timestamped_migrations : ActiveRecord::Base.timestamped_migrations
       Time.new.utc.strftime("%Y%m%d%H%M%S")
     else
       "%.3d" % (current_migration_number(dirname) + 1)
