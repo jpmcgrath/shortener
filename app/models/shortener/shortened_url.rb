@@ -117,7 +117,11 @@ class Shortener::ShortenedUrl < Shortener::Record
   end
 
   def increment_usage_count
-    ActiveRecord::Base.connected_to(role: :writing) do
+    if ActiveRecord::Base.respond_to?(:connected_to)
+      ActiveRecord::Base.connected_to(role: :writing) do
+        self.class.increment_counter(:use_count, id)
+      end
+    else
       self.class.increment_counter(:use_count, id)
     end
   end
