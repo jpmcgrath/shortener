@@ -260,13 +260,27 @@ If you want more things to happen when a user accesses one of your short urls, y
 
 You can store a `shortened_urls` table in another database and connecting to it by creating a initializer with the following:
 
-```ruby
-ActiveSupport.on_load(:shortener_record) do
-  connects_to(database: { writing: :dbname, reading: :dbname_replica })
-end
-```
+    ActiveSupport.on_load(:shortener_record) do
+      connects_to(database: { writing: :dbname, reading: :dbname_replica })
+    end
 
 **Note:** Please, replace `dbname` and `dbname_replica` to match your database configuration.
+
+=== Configuring Reader and Writer Multi-DB Roles
+
+Shortener has one write operation that happens on a GET request. To allow this you can override this method in an initializer.
+
+    module ShortenerWriterMonkeyPatch
+      def increment_usage_count
+        ActiveRecord::Base.connected_to(role: :writing) do
+          self.class.increment_counter(:use_count, id)
+        end
+      end
+    end
+
+    ActiveSupport.on_load(:shortener_shortened_url) do
+      Shortener::ShortenedUrl.prepend(ShortenerWriterMonkeyPatch)
+    end
 
 == Contributing
 
