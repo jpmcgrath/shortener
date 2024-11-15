@@ -106,6 +106,18 @@ You can control this option if it interferes for any of your logic. One common c
 
   Shortener.auto_clean_url = true
 
+By default, Shortener will track utilization of shortened URLs. This value is stored as an integer in the +use_count+ column.
+You can override this behaviour as necessary for your application:
+
+  Shortener.increment_usage_count = ->(url) do
+    # move the operation to a background job (your application defines the job class)
+    UrlTrackingJob.perform_later(url)
+  end
+
+Alternatively tracking can be disabled entirely with the following configuration:
+
+  Shortener.increment_usage_count = ->(_url) {} # turn into a no-op
+
 == Usage
 
 To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:
@@ -268,18 +280,13 @@ You can store a `shortened_urls` table in another database and connecting to it 
 
 === Configuring Reader and Writer Multi-DB Roles
 
-Shortener has one write operation that happens on a GET request. To allow this you can override this method in an initializer.
+By default shortener will perform one write operation per GET request. You can configure a custom database role as follows:
 
-    module ShortenerWriterMonkeyPatch
-      def increment_usage_count
-        ActiveRecord::Base.connected_to(role: :writing) do
-          self.class.increment_counter(:use_count, id)
-        end
+    # config/initializers/shortener.rb
+    Shortener.increment_usage_count = ->(url) do
+      ActiveRecord::Base.connected_to(role: :writing) do
+        url.class.increment_counter(:use_count, url.id)
       end
-    end
-
-    ActiveSupport.on_load(:shortener_shortened_url) do
-      Shortener::ShortenedUrl.prepend(ShortenerWriterMonkeyPatch)
     end
 
 == Contributing

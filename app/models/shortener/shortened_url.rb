@@ -117,7 +117,7 @@ class Shortener::ShortenedUrl < Shortener::Record
   end
 
   def increment_usage_count
-    self.class.increment_counter(:use_count, id)
+    Shortener.increment_usage_count.call(self)
   end
 
   def to_param

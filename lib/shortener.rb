@@ -45,6 +45,13 @@ module Shortener
   mattr_accessor :auto_clean_url
   self.auto_clean_url = true
 
+  # increment_usage_count - strategy used to increment usage count, defined as
+  # a lambda that accepts the Shortener::ShortenedUrl record as an argument
+  mattr_accessor :increment_usage_count
+  self.increment_usage_count = ->(url) do
+    url.class.increment_counter(:use_count, url.id)
+  end
+
   def self.key_chars
     charset.is_a?(Symbol) ? CHARSETS[charset] : charset
   end

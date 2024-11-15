@@ -229,10 +229,26 @@ describe Shortener::ShortenedUrl, type: :model do
   describe '#increment_usage_count' do
     let(:url) { 'https://example.com'}
     let(:short_url) { Shortener::ShortenedUrl.generate!(url) }
+    
     it 'increments the use_count on the shortenedLink' do
       original_count = short_url.use_count
       short_url.increment_usage_count
       expect(short_url.reload.use_count).to eq (original_count + 1)
+    end
+
+    context 'with usage count disabled' do
+      around(:each) do |example|
+        original = Shortener.increment_usage_count
+        Shortener.increment_usage_count = ->(_record) {} # no-op
+        example.run
+        Shortener.increment_usage_count = original
+      end
+
+      it 'returns the original usage count' do
+        original_count = short_url.use_count
+        short_url.increment_usage_count
+        expect(short_url.reload.use_count).to eq(original_count)
+      end
     end
   end
 
