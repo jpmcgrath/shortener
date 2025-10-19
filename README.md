@@ -1,12 +1,12 @@
-{<img src="https://github.com/jpmcgrath/shortener/actions/workflows/ruby.yml/badge.svg" alt="Build Status" />}[https://github.com/jpmcgrath/shortener/actions]
-{<img src="https://codeclimate.com/github/jpmcgrath/shortener/badges/gpa.svg" />}[https://codeclimate.com/github/jpmcgrath/shortener]
-{<img src="https://badge.fury.io/rb/shortener.svg" alt="Gem version" />}[http://badge.fury.io/rb/shortener]
+[![Build Status](https://github.com/jpmcgrath/shortener/actions/workflows/ruby.yml/badge.svg)](https://codeclimate.com/github/jpmcgrath/shortener)
+[![Code Climate](https://codeclimate.com/github/jpmcgrath/shortener/badges/gpa.svg)](https://codeclimate.com/github/jpmcgrath/shortener)
+[![Gem version](https://badge.fury.io/rb/shortener.svg)](http://badge.fury.io/rb/shortener)
 
-= Shortener
+# Shortener
 
 Shortener is a Rails Engine Gem that makes it easy to create and interpret shortened URLs on your own domain from within your Rails application. Once installed Shortener will generate, store URLS and "unshorten" shortened URLs for your applications visitors, all whilst collecting basic usage metrics.
 
-== Overview
+## Overview
 
 The majority of the Shortener consists of three parts:
 
@@ -14,64 +14,73 @@ The majority of the Shortener consists of three parts:
 * a controller to accept incoming requests and redirecting them to the target URL;
 * a helper for generating shortened URLs from controllers and views.
 
-=== Dependencies
+### Dependencies
 
 Shortener is designed to work from within a Ruby on Rail  applications. It has dependancies Rails core components like ActiveRecord, ActionController, the rails routing engine and more.
 
-=== Ruby Version Support
+### Ruby Version Support
 
 As Ruby 1.9.3 entered end of maintainance in early 2015, the last version of the Shortener gem
 to support Ruby 1.9.3 is 0.4.x. Shortener v0.5 onwards will require Ruby 2+.
 
-=== Upgrading
+### Upgrading
 
-==== v0.4.0 to v0.5.0
+#### v0.4.0 to v0.5.0
 There have been some breaking changes:
 1. The owner argument is passed into the generator and helper methods as a named parameter.
 2. Original URLs arguments without a hypertext protocol (http|https) will be assumed to be relative paths.
 
-=== v0.5.1 to v0.5.2
+#### v0.5.1 to v0.5.2
 v0.5.2 introduced the ability to set an expiration date for a shortened URL. The expiration dates
 are stored in a expires_at column in the database, which can be added to your schema with the following
 migration:
 
-  class AddExpiresAtToShortenedUrl < ActiveRecord::Migration[4.2]
-    def change
-      add_column :shortened_urls, :expires_at, :datetime
-    end
+```ruby
+class AddExpiresAtToShortenedUrl < ActiveRecord::Migration[4.2]
+  def change
+    add_column :shortened_urls, :expires_at, :datetime
   end
+end
+```
 
-=== v0.5.6 to v0.6.1
+#### v0.5.6 to v0.6.1
 v0.6.1 introduced the ability to categorize a shortened URL. The category value
 is stored in a string column in the database, which must be added to your schema with the following
 migration:
 
-  bundle exec rails g migration add_category_to_shortened_url category:string:index
+```console
+bundle exec rails g migration add_category_to_shortened_url category:string:index
+```
 
-
-  class AddCategoryToShortenedUrl < ActiveRecord::Migration[4.2]
-    def change
-      add_column :shortened_urls, :category, :string
-      add_index :shortened_urls, :category
-    end
+```ruby
+class AddCategoryToShortenedUrl < ActiveRecord::Migration[4.2]
+  def change
+    add_column :shortened_urls, :category, :string
+    add_index :shortened_urls, :category
   end
+end
+```
 
-=== Some niceities of Shortener:
+### Some niceities of Shortener:
 
 * The controller does a 301 redirect, which is the recommended type of redirect for maintaining maximum google juice to the original URL;
 * A unique alphanumeric code of generated for each shortened link, this means that we can get more unique combinations than if we just used numbers;
 * The link records a count of how many times it has been “un-shortened”;
 * The link can be associated with a user, this allows for stats of the link usage for a particular user and other interesting things;
 
-== Installation
+## Installation
 
 Shortener is compatible with Rails v4, v5, & v6. To install, add to your Gemfile:
 
-  gem 'shortener'
+```ruby
+gem 'shortener'
+```
 
 After you install Shortener run the generator:
 
-  rails generate shortener
+```console
+rails generate shortener
+```
 
 This generator will create a migration to create the shortened_urls table where your shortened URLs will be stored.
 
@@ -79,109 +88,148 @@ This generator will create a migration to create the shortened_urls table where 
 
 Then add to your routes:
 
-  get '/:id' => "shortener/shortened_urls#show"
+```ruby
+get '/:id' => "shortener/shortened_urls#show"
+```
 
-== Configuration
+## Configuration
 The gem can be configured in a config/initializers/shortener.rb file.
 
 By default, the shortener will generate keys that are 5 characters long. You can change that by specifying the length of the key like so;
 
-  Shortener.unique_key_length = 6
+```ruby
+Shortener.unique_key_length = 6
+```
 
 By default, when a unique key isn't matched the site is redirected to "/". You can change that by specifying a different url like so;
 
-  Shortener.default_redirect = "http://www.someurl.com"
+```ruby
+Shortener.default_redirect = "http://www.someurl.com"
+```
 
 By default, Shortener will generate unique keys using numbers and lowercase a-z. If you desire more combinations, you can enable
 the upper and lower case charset, by including the following:
 
-  Shortener.charset = :alphanumcase
+```ruby
+Shortener.charset = :alphanumcase
+```
 
 If you want to use a custom charset, you can create your own combination by creating an array of possible values, such as allowing underscore and dashes:
 
-  Shortener.charset = ("a".."z").to_a + (0..9).to_a + ["-", "_"]
+```ruby
+Shortener.charset = ("a".."z").to_a + (0..9).to_a + ["-", "_"]
+```
 
 By default, <b>Shortener assumes URLs to be valid web URLs</b> and normalizes them in an effort to make sure there are no duplicate records generated for effectively same URLs with differences of only non-effective slash etc.
 You can control this option if it interferes for any of your logic. One common case is for mobile app links or universal links where normalization can corrupt the URLs of form <tt>appname://some_route</tt>
 
-  Shortener.auto_clean_url = true
+```ruby
+Shortener.auto_clean_url = true
+```
 
-== Usage
+## Usage
 
 To generate a Shortened URL object for the URL "http://example.com" within your controller / models do the following:
 
-  Shortener::ShortenedUrl.generate("http://example.com")
+```ruby
+Shortener::ShortenedUrl.generate("http://example.com")
+```
 
 Alternatively, you can create a shortened url to a relative path within your application:
 
-  Shortener::ShortenedUrl.generate("/relative-path?param=whatever")
+```ruby
+Shortener::ShortenedUrl.generate("/relative-path?param=whatever")
+```
 
 To generate and display a shortened URL in your application use the helper method:
 
-  short_url("http://example.com")
+```ruby
+short_url("http://example.com")
+```
 
 Pass in subdomain, protocol and other options that the UrlHelper url_for accepts:
 
-  short_url("http://example.com", url_options: { subdomain: 'foo', host: 'bar', protocol: 'https' } )
+```ruby
+short_url(
+  "http://example.com", 
+  url_options: { subdomain: 'foo', host: 'bar', protocol: 'https' } 
+)
+```
 
 This will generate a shortened URL. store it to the db and return a string representing the shortened URL.
 
-=== Shortened URLs with owner
+### Shortened URLs with owner
 
 You can link shortened URLs to an owner, to scope them. To do so, add the following line to the models which will act as owners:
 
-  class User < ActiveRecord::Base
-    has_shortened_urls
-  end
+```ruby
+class User < ActiveRecord::Base
+  has_shortened_urls
+end
+```
 
 This will allow you to pass the owner when generating URLs:
 
-  Shortener::ShortenedUrl.generate("example.com", owner: user)
+```ruby
+Shortener::ShortenedUrl.generate("example.com", owner: user)
 
-  short_url("http://example.com", owner: user)
+short_url("http://example.com", owner: user)
+```
 
 And to access those URLs:
 
-  user.shortened_urls
+```ruby
+user.shortened_urls
+```
 
-=== Shortened URLs with custom unique key
+### Shortened URLs with custom unique key
 
 You can pass in your own key when generating a shortened URL. This should be unique.
 
 *Important:* Custom keys can't contain characters other than those defined in *Shortener.charset*. Default is numbers and lowercase a-z (See *Configuration*).
 
-  Shortener::ShortenedUrl.generate("example.com", owner: user, custom_key: "mykey")
+```ruby
+Shortener::ShortenedUrl.generate("example.com", owner: user, custom_key: "mykey")
 
-  short_url("http://example.com", custom_key: 'yourkey')
+short_url("http://example.com", custom_key: 'yourkey')
+```
 
-=== Expirable Shortened URLs
+### Expirable Shortened URLs
 
 You can create expirable URLs.
 Probably, most of the time it would be used with owner:
 
-  Shortener::ShortenedUrl.generate("example.com/page", owner: user, expires_at: 24.hours.since)
+```ruby
+Shortener::ShortenedUrl.generate("example.com/page", owner: user, expires_at: 24.hours.since)
+```
 
 You can omit owner:
 
-  Shortener::ShortenedUrl.generate("example.com/page", expires_at: 24.hours.since)
+```ruby
+Shortener::ShortenedUrl.generate("example.com/page", expires_at: 24.hours.since)
+```
 
-=== Fresh Links
+### Fresh Links
 
 Sometimes you just need that feeling of a fresh, untouched Shortened URL. By default,
 Shortener will find an existing ShortenedUrl record for a supplied URL. If you want
 to create a fresh record, you can pass the following argument:
 
-  Shortener::ShortenedUrl.generate("example.com/page", fresh: true)
-  short_url("http://example.com", fresh: true)
+```ruby
+Shortener::ShortenedUrl.generate("example.com/page", fresh: true)
+short_url("http://example.com", fresh: true)
+```
 
-=== Forbidden keys
+### Forbidden keys
 
 You can ensure that records with forbidden keys will not be generated.
 In Rails you can put next line into config/initializers/shortener.rb
 
-  Shortener.forbidden_keys.concat %w(terms promo)
+```ruby
+Shortener.forbidden_keys.concat %w(terms promo)
+```
 
-=== Ignoring Robots
+### Ignoring Robots
 
 By default Shortener will count all visits to a shortened url, including any crawler
 robots like the Google Web Crawler, or Twitter's link unshortening bot. To ignore
@@ -189,24 +237,30 @@ these visits, Shortener makes use of the excellent voight_kampff gem to identify
 web robots. This feature is disabled by default. To enable add the following to
 your shortener configuration:
 
-  Shortener.ignore_robots = true
+```ruby
+Shortener.ignore_robots = true
+```
 
-=== Mounting on a Subdomain
+### Mounting on a Subdomain
 
 If you want to constrain the shortener route to a subdomain, the following config will
 prevent the subdomain parameter from leaking in to shortened URLs if it matches the configured subdomain.
 
-Within config/initializers/shortener.rb
+Within `config/initializers/shortener.rb`
 
-  Shortener.subdomain = 's'
+```ruby
+Shortener.subdomain = 's'
+```
 
-Within config/routes.rb
+Within `config/routes.rb`
 
-  constraints subdomain: 's' do
-    get '/:id' => "shortener/shortened_urls#show"
-  end
+```ruby
+constraints subdomain: 's' do
+  get '/:id' => "shortener/shortened_urls#show"
+end
+```
 
-=== URL Parameters
+### URL Parameters
 
 Parameters are passed though from the shortened url, to the destination URL. If the destination
 URL has the same parameters as the destination URL, the parameters on the shortened url take
@@ -220,69 +274,79 @@ Then, the resulting URL will be:
 >http://destination.com?test=no&happy=defo&why=not
 Note how the test parameter takes the value given on the short URL.
 
-=== Shorten URLs in generated emails
+### Shorten URLs in generated emails
 
 You can register the included mail interceptor to shorten all links in the emails generated by your Rails app. For example, add to your mailer:
 
-  class MyMailer < ActionMailer::Base
-    register_interceptor Shortener::ShortenUrlInterceptor.new
-  end
+```ruby
+class MyMailer < ActionMailer::Base
+  register_interceptor Shortener::ShortenUrlInterceptor.new
+end
+```
 
 This will replace all long URLs in the emails generated by MyMailer with shortened versions. The base URL for the shortener will be infered from the mailer's default_url_options. If you use a different hostname for your shortener, you can use:
 
-  class MyMailer < ActionMailer::Base
-    register_interceptor Shortener::ShortenUrlInterceptor.new :base_url => "http://shortener.host"
-  end
+```ruby
+class MyMailer < ActionMailer::Base
+  register_interceptor Shortener::ShortenUrlInterceptor.new :base_url => "http://shortener.host"
+end
+```
 
 The interceptor supports a few more arguments, see the implementation for details.
 
-=== Logging, stats and other tricks
+### Logging, stats and other tricks
 
 If you want more things to happen when a user accesses one of your short urls, you can create your own `show` action as follows:
 
-    def show
-      token = ::Shortener::ShortenedUrl.extract_token(params[:id])
-      url   = ::Shortener::ShortenedUrl.fetch_with_token(token: token, additional_params: params)
-      # do some logging, store some stats
-      redirect_to url[:url], status: :moved_permanently
-    end
+```ruby
+def show
+  token = ::Shortener::ShortenedUrl.extract_token(params[:id])
+  url   = ::Shortener::ShortenedUrl.fetch_with_token(token: token, additional_params: params)
+  # do some logging, store some stats
+  redirect_to url[:url], status: :moved_permanently
+end
+```
 
-=== Fetch with Token
-  The `::Shortener::ShortenedUrl.fetch_with_token(token: token, additional_params: params)` does the following:
-  1. finds the ShortenedUrl for the supplied token
-  2. increments the use_count for the retrieved ShortenedURL
-  3. combines the additional parameters with the URL in the retrieved ShortenedURL
-  4. returns a hash of the format `{url: <the original url>, shortened_url: <the retrieved ShortenedURL>}
+### Fetch with Token
+The `::Shortener::ShortenedUrl.fetch_with_token(token: token, additional_params: params)` does the following:
+1. finds the ShortenedUrl for the supplied token
+2. increments the use_count for the retrieved ShortenedURL
+3. combines the additional parameters with the URL in the retrieved ShortenedURL
+4. returns a hash of the format `{url: <the original url>, shortened_url: <the retrieved ShortenedURL>}
 
-  *note:* If no shortened URL is found, the url will be `default_redirect` or `/`
+*note:* If no shortened URL is found, the url will be `default_redirect` or `/`
 
-=== Configuring a different database for shortened_urls table
+### Configuring a different database for shortened_urls table
 
 You can store a `shortened_urls` table in another database and connecting to it by creating a initializer with the following:
 
-    ActiveSupport.on_load(:shortener_record) do
-      connects_to(database: { writing: :dbname, reading: :dbname_replica })
-    end
+```ruby
+ActiveSupport.on_load(:shortener_record) do
+  connects_to(database: { writing: :dbname, reading: :dbname_replica })
+end
+```
 
 **Note:** Please, replace `dbname` and `dbname_replica` to match your database configuration.
 
-=== Configuring Reader and Writer Multi-DB Roles
+### Configuring Reader and Writer Multi-DB Roles
 
 Shortener has one write operation that happens on a GET request. To allow this you can override this method in an initializer.
 
-    module ShortenerWriterMonkeyPatch
-      def increment_usage_count
-        ActiveRecord::Base.connected_to(role: :writing) do
-          self.class.increment_counter(:use_count, id)
-        end
-      end
+```ruby
+module ShortenerWriterMonkeyPatch
+  def increment_usage_count
+    ActiveRecord::Base.connected_to(role: :writing) do
+      self.class.increment_counter(:use_count, id)
     end
+  end
+end
 
-    ActiveSupport.on_load(:shortener_shortened_url) do
-      Shortener::ShortenedUrl.prepend(ShortenerWriterMonkeyPatch)
-    end
+ActiveSupport.on_load(:shortener_shortened_url) do
+  Shortener::ShortenedUrl.prepend(ShortenerWriterMonkeyPatch)
+end
+```
 
-== Contributing
+## Contributing
 
 We welcome new contributors. Because we're all busy people, and because Shortener
 is used/relied upon by many projects, it is essential that new Pull Requests
