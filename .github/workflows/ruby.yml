@@ -4,7 +4,8 @@ on:
   push:
     branches: [ develop ]
   pull_request:
-    branches: [ develop ]
+    branches:
+      - '**'
 
 jobs:
   test:
@@ -12,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        ruby-version: 
+        ruby-version:
           - '2.4'
           - '2.7'
           - '3.0'
