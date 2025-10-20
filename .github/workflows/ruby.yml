@@ -10,9 +10,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        ruby-version: 
+        ruby-version:
           - '2.4'
           - '2.7'
           - '3.0'
