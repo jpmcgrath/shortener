@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.version                   = Shortener::VERSION
   s.platform                  = Gem::Platform::RUBY
   s.authors                   = [ "James P. McGrath", "Michael Reinsch" ]
-  s.email                     = [ "gems@jamespmcgrath.com", "michael@mobalean.com" ]
-  s.homepage                  = "http://jamespmcgrath.com/projects/shortener"
+  s.email                     = [ "gems@jamespmcgrath.com" ]
+  s.homepage                  = "https://github.com/jpmcgrath/shortener/"
   s.required_rubygems_version = "> 2.1.0"
 
   s.add_dependency "voight_kampff", '~> 2.0'

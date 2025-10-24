@@ -23,8 +23,10 @@ end
 migration_path = File.expand_path("../dummy/db/migrate/", __FILE__)
 if ActiveRecord::Migrator.respond_to?(:migrate)
   ActiveRecord::Migrator.migrate(migration_path)
-elsif Rails::VERSION::MAJOR < 6
-  ActiveRecord::MigrationContext.new(migration_path).migrate
-else
+elsif "#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}" == '6.0'
   ActiveRecord::MigrationContext.new(migration_path, ActiveRecord::Base.connection.schema_migration).migrate
+elsif Rails::VERSION::MAJOR > 6 || (Rails::VERSION::MAJOR == 6 && Rails::VERSION::MINOR >= 1)
+  ActiveRecord::MigrationContext.new(migration_path).up
+else
+  ActiveRecord::MigrationContext.new(migration_path).migrate
 end
